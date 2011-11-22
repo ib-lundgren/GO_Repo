@@ -1,3 +1,7 @@
+Welcome to GO-Repo
+
+Our website is http://go-repo.appspot.com 
+
 Game development involves a myriad of different tasks. Each task usually requires a very specific and often contraditcory set of skills. For example; model design calls for someone with a nack for art and building a physics engine calls for someone with a good grasp of physics and logic, these two are rarely found in one individual.
 
 Because of the many challanges it is difficult to get started with indie game development. Whether you are a developer learning to draw, a story writer learning to code or a model designer learning to write it, it will most likely be cumbersome and feel like wasted time doing something you might not have an interest in.
