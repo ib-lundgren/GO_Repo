@@ -1,0 +1,193 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="alert-message info"> 
+<h2 class="page-title"> Introducing the Game Object Repository </h2>
+</div>
+<p>
+The game object repository will allow anyone to reuse, edit and supply <em>game objects</em>. A game object might be a character model, a quest with objectives, a weapon with attachable accessories, a vehicle with special controls. We will supply a flexible way of creating vastly different and content rich games. 
+</p>
+<p>
+The repository will feature a restful API. This API will be made available to the public and can be used to create entire game creators, object modelling tools, full featured games, rich fan sites to name a few. In our first release of the API we will supply a basic game object editor and a demo game created using our game objects and a Javascript Canvas game engine.  
+</p> 
+<br/>    
+<h3> Game object categories </h3>
+<br/>
+<ul> <!-- quick indent fix, remove later  -->
+<dl>
+   <dt> No Interaction Environment </dt>
+   <dd> 
+      <br/>
+      <p>Environment that has a no effect on the character and is mainly used to create a richer gaming experience.  </p>
+      <p> Possible objects in this category include</p>
+      <ul>
+         <li> Background </li>
+         <li> Foreground </li>  
+         <li> Weather effects </li>
+      </ul>
+   </dd>
+   <br/>
+   <dt> Passive Interaction Environment </dt>
+   <dd> 
+      <br/>
+      <p>Environment that has a passive effect on characters and vehicles. Imagine your character walking into a swamp, then he might start to walk slower and this is the passive effect. Another scenario would be a character standing on ground, the ground pushes him up with a force equal to the gravity. If the ground was to be removed, he would fall. </p>
+      <p> Possible objects in this category include</p>
+      <ul>
+         <li> Dirt </li>
+         <li> Fire </li>  
+         <li> Swamp </li>
+         <li> Power up </li>
+      </ul>
+   </dd>
+   <br/>
+   <dt> Active Interaction Environment </dt>
+   <dd> 
+      <br/>
+      <p>Environment that can be interacted with. A good example is Mario going down through pipes by pressing the "Down" button. It could be a ticking bomb that could be defused or water you can swim in.</p>
+      <p> Possible objects in this category include</p>
+      <ul>
+         <li> Water </li>
+         <li> Door </li>  
+         <li> Ladder </li>
+         <li> Treasure chest </li>
+      </ul>
+   </dd>
+   <br/>
+   <dt> Character </dt>
+   <dd> 
+      <br/>
+      <p> Characters can have a multitude of shapes and forms but most will likely have a few common features. They might include a graphical model, a level, lists of equipment, skills, achievements, ranks, reputation, score and which teams it is a member in. </p>
+      <p> Possible objects in this category include</p>
+      <ul>
+         <li>  Adventurer (Roleplaying) </li>
+         <li>  Rifleman (Strategy)</li>  
+         <li>  Terrorist (Shooter)</li>
+         <li>  Monkey (Arcade)</li>
+      </ul>
+   </dd>
+   <br/>
+   <dt> Vehicle </dt>
+   <dd> 
+      <br/>
+      <p> Vehicles that can be controlled by players. They could have properties like speed, acceleration, armor, fuel level, gears and a list of drivers and passengers.   </p>
+      <p> Possible objects in this category include</p>
+      <ul>
+         <li>  Horse </li>
+         <li>  Tank</li>  
+         <li>  Jetpack</li>
+         <li>  Snowboard</li>
+         <li>  Elevator </li>
+      </ul>
+   </dd>
+   <br/>
+   <dt> Equipment </dt>
+   <dd> 
+      <br/>
+      <p> Equipment used by characters. Might include an AK-47 with detachable scope, an inventory bag, currency, potions and funky mushrooms. </p>
+      <p> Possible objects in this category include</p>
+      <ul>
+         <li>  Weapon </li>
+         <li>  Ammunition </li>
+         <li>  Armor</li>  
+         <li>  Consumable</li>
+         <li>  Inventory</li>
+      </ul>
+   </dd>
+   <br/>
+   <dt> Mission / Quest </dt>
+   <dd> 
+      <br/>
+      <p> The goal of the game is usually achieved through a series of missions or quests. These usually have a objectives, information, rewards and pre-conditions to be able to take it.</p>
+      <p> Possible objects in this category include</p>
+      <ul>
+         <li>  PickUp20000000DeerAntlers </li>
+         <li>  KillEnemyTeam </li>
+         <li>  DefuseBomb</li>  
+      </ul>
+   </dd>
+   <br/>
+   <dt> Teams </dt>
+   <dd> 
+      <br/>
+      <p> Teams are a group of characters or other teams. Using teams you can construct anything from a dungeon group, to a football team to a full faction or guild.  </p> 
+      <p> Possible objects in this category include</p>
+      <ul>
+         <li>  Terrorists </li>
+         <li>  Alliance </li>
+         <li>  TheSpanishBobsledgeTeam</li>  
+      </ul>
+   </dd>
+   <br/>
+   <dt> Map / Game Level  </dt>
+   <dd> 
+      <br/>
+      <p> A map is a collection of game objects. Maps usually make up the core of the game and the entire game can be seen as a collection of maps. Each map might have a lists containing environments, vehicles, characters, teams and mission objects. </p> 
+      <p> Possible objects in this category include</p>
+      <ul>
+         <li>  SideScrollerLevel </li>
+         <li>  Azeroth </li>
+         <li>  Brands Hatch F1 Circuit</li>  
+      </ul>
+   </dd>
+   <br/>
+   <dt> Event  </dt>
+   <dd> 
+      <br/>
+      <p> An event can be practically anything that happens during a game. Game developers might want to save statistics of what achivements players get, or they might want to save every little event that happens to allow the entire game to be replayed later. </p> 
+      <p> Possible objects in this category include</p>
+      <ul>
+         <li>  Headshot </li>
+         <li>  MissionComplete </li>
+         <li>  PlayerDisconnected</li>  
+      </ul>
+   </dd>
+   <br/>
+   <dt> Player </dt>
+   <dd> 
+      <br/>
+      <p> A player represents the actual human player. In an RPG the player might control one or more characters, in a shooter he might choose a new character on each game, in tetris he doesn't have a character at all. Player can also be used to track statistics like total time played, accuracy and ladder rank. </p> 
+      <p> Possible objects in this category include</p>
+      <ul>
+         <li>  RPG Player </li>
+         <li>  FPS Player </li>
+      </ul>
+   </dd>
+   <br/>
+   <dt> NPC </dt>
+   <dd> 
+      <br/>
+      <p> NPCs are basically computer controlled players. They are mainly found in Maps/Levels but can also act very similar to a normal player in the case of bots. </p> 
+      <p> Possible objects in this category include</p>
+      <ul>
+         <li>  QuestGiver</li>
+         <li>  Boss </li>
+         <li>  Bot </li>
+      </ul>
+   </dd>
+   <br/>
+   <dt> Game </dt>
+   <dd> 
+      <br/>
+      <p> A game is the collection of game objects that make up a game. This can include lists of levels, players, npcs. It might also contain high scores and restrictions on maximum amount of players. </p> 
+      <p> Possible objects in this category include</p>
+      <ul>
+         <li>  Angry Birds</li>
+         <li>  Battlefield 3 </li>
+         <li>  Tetris </li>
+      </ul>
+   </dd>
+   <br/>
+   <dt> Modifiers </dt>
+   <dd> 
+      <br/>
+      <p> </p> 
+      <p> Possible objects in this category include</p>
+      <ul>
+         <li>  IncreaseWeaponDamage (Equipment)</li>
+         <li>  IncreaseMountSpeed (Vehicle) </li>
+         <li>  ChangeLocation (Character) </li>
+      </ul>
+   </dd>
+</dl>
+</ul>
+{% endblock %}
+

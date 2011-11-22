@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="alert-message info">   
+<h2 class="page-title"> Development progress </h2>
+</div>
+<div class="span6">
+<h4><a href="https://plus.google.com/b/117412220796828368178/117412220796828368178/posts"> Google+ Page posts</a></h4>
+<ul>
+{% autoescape off %} 
+{% for post in posts %}
+   <li>   
+   <h4><a href="{{post.url}}"> {{ post.actor }} </a></h4>
+   <p> {{ post.content }} </p>
+   </li>
+{% endfor %}
+{% endautoescape %} 
+</ul>
+</div>
+<div class="span6">
+<h4><a href="https://github.com/ib-lundgren/Vigostr">Github commits</a></h4>
+<ul>
+{% for commit in commits %}
+   <li><a href="{{commit.url}}"> {{commit.title}}</a>
+{% endfor %}
+<ul>
+</div>
+{% endblock %}
+
+

@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="alert-message info">   
+<h2 class="page-title"> We have a cunning plan </h2>
+</div>
+<p>Game development involves a myriad of different tasks. Each task usually requires a very specific and often contraditcory set of skills. For example; model design calls for someone with a nack for art and building a physics engine calls for someone with a good grasp of physics and logic, these two are rarely found in one individual. 
+</p>
+<p>
+Because of the many challanges it is difficult to get started with indie game development. Whether you are a developer learning to draw, a story writer learning to code or a model designer learning to write it, it will most likely be cumbersome and feel like wasted time doing something you might not have an interest in.  
+</p>
+<p>
+We think it would be better if you focused on only what you like. Everything else should be provided for you in a pick-what-you like manner. That is why we are creating a <strong>game object repository</strong>.
+</p>
+
+<h3> Interested in contributing? </h3>
+<p> All contributions are most welcome, currently you could help out by: </p>
+<ol>
+   <li> <a href="https://github.com/ib-lundgren/Vigostr/issues/new">Suggesting new features or game objects by adding Github issues</a></li>
+   <li> Constructively criticise anything that comes to your mind in an <a href="/contact">email</a></li>
+   <li> Start making game objects yourself, create graphics, write object properties for your favourite weapons, tell a story through a quest line etc. Then when time comes, share them with the world in our repository</li>
+   <li> Tell people about the project </li>
+</ol>
+
+<h3> Goals for GO-Repo version 0.1</h3>
+<ol>
+   <li> The API should support getting, adding and editing of a base set of game objects </li>
+   <li> Write a tutorial explaining how to use the API</li>
+   <li> Create a front end for the GO-store that displays a categorised list stored objects</li>
+   <li> Create simple editor to create and edit objects with </li>
+</ol>
+
+<h3> Future plans (backlog) </h3>
+<ol>
+   <li> Extend the set of game objects </li>
+   <li> Create a simple showcase game using GO-Repo</li>
+   <li> Add rating of game objects </li>
+   <li> Enable searching for game objects </li>
+   <li> and much more ... </li>
+</ol>
+
+<h3> Licencing issues </h3>
+<p> As you probably have thought already? If people contribute, what happens to copyright? All material in GO-Repo will be copyrighted under the <a href="http://creativecommons.org/licenses/by-sa/3.0/">Creative Commons Share-Alike licence</a>. More lincencing types might be added in the future if necessary. </p>
+
+<h3> Time constraints </h3>
+<p>GO-Repo is going to be the result of an assignment in the course <a href="https://sites.google.com/a/ltu.se/m7011e-2011/"> Design of Dynamic Web Systems 2011 M7011E </a>. The time span for this is 200 hours per person, including lectures, seminars and other work that might not be visible to anyone visiting GO-Repo. </p>
+<p> If we find that this project gains momentum or we simple enjoy it as much as we intend to, we will likely continue working with it after the course is finished, improving and adding more features. </p>
+
+<h3> Security and Privacy </h3>
+<p> GO-Repo will not store any sensitive data except user emails, these will be encrypted. Every contribution and game object will be fully open, and since nothing is hidden, nothing intended to be hidden can be revealed. Users will login using an OpenID provider. </p>
+
+<h3> Technologies </h3>
+GO-Repo will be written in Python. We will use tools such as <a href="http://www.allbuttonspressed.com/projects/django-nonrel">Django-nonrel</a>, <a href="http://trac.buildbot.net/"> Buildbot</a> , <a href="http://code.google.com/appengine/">Google App Engine</a> and <a href="https://github.com/"> Github</a>. 
+{% endblock %}

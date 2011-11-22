@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="alert-message info">  
+<h2 class="page-title"> Documentation </h2> 
+</div>
+<p> We will update this section with tutorials, examples, API reference etc in due time. 
+<p> Everything we develop will be open source under a licence yet to be determined (likely agpl or lagpl if there is one). </p>
+<br/>
+<h3> Installing a clone of Vigostr on appengine </h3><br/>
+<p> Install the <a href="http://code.google.com/appengine/downloads.html#Google_App_Engine_SDK_for_Python">Python Appengine SDK</a> and make sure appcfg.py and dev_appserver.py is on your path and marked as executable. You will also need Python and Git.</p><br/>
+<p> Get the source code for the website </p>
+<pre class="prettyprint">
+git clone git://github.com/ib-lundgren/Vigostr.git
+</pre>
+<p> Change the app.yaml name field to match your appspot name (unless you are an admin for Vigostr, then just leave it). Upload to appspot using appcfg.py or try it out locally with dev_appserver.py </p>
+<br/>
+<pre class="prettyprint">
+$ dev_appserver.py Vigostr/
+$ appcfg.py update Vigostr/
+</pre>
+{% endblock %}
+

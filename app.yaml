@@ -1,0 +1,17 @@
+application: go-repo
+version: 2
+runtime: python27
+api_version: 1
+threadsafe: yes
+
+handlers:
+- url: /media
+  static_dir: media/
+  expiration: '365d'
+
+- url: /.*
+  script: main.app 
+
+libraries:
+- name: django
+  version: "1.2"
