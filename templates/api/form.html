@@ -4,14 +4,18 @@
 <h2 class="page-title"> Generic form </h2> 
 </div>
 <form method="POST" action="/api/objects">    
-{% for field in form %}
 <div class="clearfix">
-{{ field.label_tag }} 
-    <div class="input">
-	{{ field }}
-    </div>
+	<label for="title"> Title </label>
+	<div class="input">
+		<input type="text" name="title"/>
+	</div>
 </div>
-{% endfor %}
+<div class="clearfix">
+	<label for="description"> Description:</label>
+	<div class="input">
+		<input type="text" name="description"/>
+	</div>
+</div>
 <div class="clearfix"> <div class="input">
 <input type="submit" value="Create object"/>
 </div></div>
