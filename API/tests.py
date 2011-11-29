@@ -1,16 +1,23 @@
-"""
-This file demonstrates writing tests using the unittest module. These will pass
-when you run "manage.py test".
+import unittest, sys
+from models import *
+from google.appengine.ext import db
+from google.appengine.ext import testbed
+from google.appengine.datastore import datastore_stub_util
 
-Replace this with more appropriate tests for your application.
-"""
+class GameObjectTest(unittest.TestCase):
+    def setUp(self):
+	self.testbed = testbed.Testbed()
+	self.testbed.activate()
+	self.policy = datastore_stub_util.PseudoRandomHRConsistencyPolicy(probability=0)
+	self.testbed.init_datastore_v3_stub(consistency_policy=self.policy)
+	
+    def tearDown(self):
+	self.testbed.deactivate()
 
-from django.test import TestCase
-
-
-class SimpleTest(TestCase):
-    def test_basic_addition(self):
-        """
-        Tests that 1 + 1 always equals 2.
-        """
-        self.assertEqual(1 + 1, 2)
+    def test_create(self):
+        go = GameObject()
+	go.title = "Test title"
+	go.description = "Test description"
+	key = go.put()
+	go2 = GameObject.get(key)
+	self.assertEquals(go2.title, "Test title")

@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="alert-message info">  
+<h2 class="page-title"> Generic form </h2> 
+</div>
+<form method="POST" action="/api/objects">    
+{% for field in form %}
+<div class="clearfix">
+{{ field.label_tag }} 
+    <div class="input">
+	{{ field }}
+    </div>
+</div>
+{% endfor %}
+<div class="clearfix"> <div class="input">
+<input type="submit" value="Create object"/>
+</div></div>
+</form>
+{% endblock %}
+

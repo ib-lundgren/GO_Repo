@@ -1,20 +1,29 @@
 from google.appengine.ext import db
 
-class VisualGameObject(db.Model):
-	# id is automatic, no need for explicit field
+class GameObject(db.Model):
+	title = db.StringProperty()
+	description = db.TextProperty()
+	def to_dict(self):
+           return dict([(p, unicode(getattr(self, p))) for p in self.properties()])
+
+class Shape(GameObject):
+	width = db.IntegerProperty()
+	height = db.IntegerProperty()
+
+class Graphics(GameObject):
+	url = db.LinkProperty()
+
+class VisualGameObject(GameObject):
 	weight = db.FloatProperty()
 	height = db.FloatProperty()
 	shape = db.ReferenceProperty(Shape)
 	graphics = db.ReferenceProperty(Graphics)
-	created = db.DateTimeProperty(auto_add_now=true)
-
-class CompositeGameObject(db.Model):
+	created = db.DateTimeProperty(auto_now_add=True)
+	
+class CompositeGameObject(GameObject):
 	objects = db.ListProperty(db.Key)
 
-class Shape(db.Model):
-	pass
-
-class Graphics(db.model):
+class Modifier(GameObject):
 	pass
 
 class Environment(VisualGameObject):
@@ -24,21 +33,46 @@ class Environment(VisualGameObject):
 	location_state = db.StringProperty(choices=lstates)
 	interactions = db.ListProperty(db.Key)
 
-class Interaction(db.Model):
+class Interaction(GameObject):	
 	triggers = set(["enter", "leave", "activate"])
 	trigger = db.StringProperty(choices=triggers)
 	modifier = db.ReferenceProperty(Modifier)
 
-class Modifier(db.Model):
-	pass
 
-class Level(db.Model):
+
+class Level(GameObject):
 	objects = db.ListProperty(db.Key)
 
-class LocatedObject(db.Model):
+class LocatedObject(GameObject):
 	x = db.IntegerProperty()
 	y = db.IntegerProperty()
 	z = db.IntegerProperty()
-	obj = ReferenceProperty(VisualGameObject)
+	obj = db.ReferenceProperty(VisualGameObject)
 
-# todo: add more properties and classes
+class Equipment(VisualGameObject):
+	pass
+
+class Vehicle(VisualGameObject):
+	pass
+
+class Mission(GameObject):
+	pass
+
+class Character(VisualGameObject):
+	pass
+
+class NPC(VisualGameObject):
+	pass
+
+class Team(VisualGameObject):
+	pass
+
+class Event(GameObject):
+	pass
+
+class Player(GameObject):
+	pass
+
+class Game(GameObject):
+	pass
+
