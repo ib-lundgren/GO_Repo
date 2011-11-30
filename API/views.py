@@ -1,10 +1,12 @@
 from django.views.generic.simple import direct_to_template
 from models import *
+from forms import *
 from django.utils import simplejson
 from django.http import HttpResponseRedirect
 
 def test(request):
-	return direct_to_template(request, 'api/form.html', {}) 
+    form = GameObjectForm()
+    return direct_to_template(request, 'api/form.html', {"form":form}) 
 
 def objects(request):
 	if request.method == 'GET':

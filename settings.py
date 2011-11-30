@@ -52,6 +52,7 @@ TEMPLATE_DIRS = (os.path.join(os.path.dirname(__file__), 'templates'),)
 INSTALLED_APPS = (
     'info',
     'progress',
+    'wtforms',
 )
 
 # A sample logging configuration. The only tangible logging

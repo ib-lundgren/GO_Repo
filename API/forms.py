@@ -1,6 +1,4 @@
-from google.appengine.ext.db import djangoforms
+from wtforms.ext.appengine.db import model_form
 from models import *
 
-class GameObjectForm(djangoforms.ModelForm):
-	class Meta:
-		model = GameObject
+GameObjectForm = model_form(GameObject)

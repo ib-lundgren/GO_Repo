@@ -1,24 +1,22 @@
 {% extends "base.html" %}
 {% block content %}
+{% autoescape off %}
 <div class="alert-message info">  
 <h2 class="page-title"> Generic form </h2> 
 </div>
 <form method="POST" action="/api/objects">    
 <div class="clearfix">
-	<label for="title"> Title </label>
-	<div class="input">
-		<input type="text" name="title"/>
-	</div>
+    {{ form.title.label }}
+    {{ form.title }}
 </div>
 <div class="clearfix">
-	<label for="description"> Description:</label>
-	<div class="input">
-		<input type="text" name="description"/>
-	</div>
+    {{ form.description.label }}
+    {{ form.description }}
 </div>
 <div class="clearfix"> <div class="input">
 <input type="submit" value="Create object"/>
 </div></div>
 </form>
+{% endautoescape %}
 {% endblock %}
 

@@ -2,7 +2,7 @@
 import sys, os
 import unittest2
 
-SDK_PATH = "/home/ib/Runnables/google_appengine/"
+SDK_PATH = "E:\google_appengine"
 TEST_DIR = os.path.dirname(__file__)
 
 if __name__ == "__main__":
