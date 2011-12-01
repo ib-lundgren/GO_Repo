@@ -36,6 +36,19 @@ def objects(request):
 
 # Check type of request and delegate
 def handle_objects(request, category=None):
+	m = __import__("models", globals(), locals(), [], -1)
+	if not hasattr(m, category):
+		return invalid_category(request, category)
+	
+	formName = category + "Form"
+	f = __import__("forms", globals(), locals(), [], -1)
+	if not hasattr(f, formName):
+		return invalid_category(request, category)
+
+	formCls = getattr(f, formName)
+	
+	objCls = getattr(m, category)
+
 	views = {  "POST" : create_new_object,
 		   "GET" : get_objects,
 		   "PUT" : not_implemented,
@@ -43,10 +56,26 @@ def handle_objects(request, category=None):
 		   "HEAD" : not_implemented,
 		   "PATCH" : not_implemented,
 		}
-	return views.get(request.method)(request, category)
+	return views.get(request.method)(request, objCls, formCls=formCls)
 
 # Check type of request and delegate
 def handle_object(request, category=None, objectID=None):
+	m = __import__("models", globals(), locals(), [], -1)
+	if not hasattr(m, category):
+		return invalid_category(request, category)
+	objCls = getattr(m, category)
+	
+	formName = category + "Form"
+	f = __import__("forms", globals(), locals(), [], -1)
+	if not hasattr(f, formName):
+		return invalid_category(request, category)
+
+	formCls = getattr(f, formName)
+	
+	obj = objCls.get_by_id(objectID)
+	if not obj:
+		return invalid_object(request, category, objectID)
+
 	views = {  "POST" : not_implemented,
 		   "GET" : get_object,
 		   "PUT" : update_object,
@@ -54,20 +83,14 @@ def handle_object(request, category=None, objectID=None):
 		   "HEAD" : not_implemented,
 		   "PATCH" : not_implemented,
 		}
-	return views.get(request.method)(request, category, objectID)	
-
+	return views.get(request.method)(request, objCls, obj, formCls=formCls)	
 # Tell the user he is trying to access something that aint there =)
 def not_implemented(request, **kwargs):
 	pass
 
 # Parse a POST request into an object and save it
-def create_new_object(request, category=None):
-	formName = category + "Form"
-	if not hasattr(forms, formName) or not hasattr(models, category):
-		return not_implemented(request, category)
-	formCls = getattr(forms, formName)
+def create_new_object(request, objCls, formCls):
 	form = formCls(request.POST)
-	objCls = getattr(models, category)
 	obj = objCls()
 	if form.validate():
 		form.populate_obj(obj)
@@ -78,22 +101,46 @@ def create_new_object(request, category=None):
 
 # Create a json error response from a form
 def form_error(request, form, obj):
-	pass
+	info = { 'obj' : obj,
+		 'form' : form,
+		 'errors' : form.errors,
+		}
+	return direct_to_template(request, "api/error.html", {'info':info})
 
 # Parse a PUT request and update an existing object
-def update_object(request, category=None, objectID=None):
-	pass
+def update_object(request, objCls, obj, formCls):
+	form = formCls(request.PUT)
+	if form.validate():
+                form.populate_obj(obj)
+                obj.put()
+                return HttpResponseRedirect("api/" + category)
+        else:
+                return form_error(request, form, obj)
+	
 
 # Get all objects in a category
-def get_objects(request, category=None, filter=None):
-	pass
-
+def get_objects(request, objCls, formCls):
+	items = simplejson.dumps([o.to_dict() for o in objCls.all()], indent=3)
+	return direct_to_template(request, "api/list.html", {"items":items})
+ 
 # Get a specific object from category and ID
-def get_object(request, category=None):
-	pass
+def get_object(request, objCls, obj, formCls):
+	item = simplejson.dumps(obj.to_dict())
+	return direct_to_template(request, "api/single.html", {"item":item}) 
+
+# Invalid category
+def invalid_category(request, category):
+	info = { "category" : category }
+	return direct_to_template(request, "api/invalid_category.html", info)
+
+# Invalid object
+def invalid_object(request, category, obj):
+	info = { "obj" : obj }
+	return direct_to_template(request, "api/invalid_object.html", info)
 
 # Delete an object from a category and ID
 def delete_object(request, category=None, objectID=None):
-	pass
-
+ 	# like get obj but delete and return confirm json
+	info = { "msg" : "object X deleted" }
+	return direct_to_tempate(request, "api/confirm.html", info)
 
