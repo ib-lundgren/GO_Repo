@@ -62,6 +62,22 @@ def not_implemented(request, **kwargs):
 
 # Parse a POST request into an object and save it
 def create_new_object(request, category=None):
+	formName = category + "Form"
+	if not hasattr(forms, formName) or not hasattr(models, category):
+		return not_implemented(request, category)
+	formCls = getattr(forms, formName)
+	form = formCls(request.POST)
+	objCls = getattr(models, category)
+	obj = objCls()
+	if form.validate():
+		form.populate_obj(obj)
+		obj.put()
+		return HttpResponseRedirect("api/" + category)
+	else:
+		return form_error(request, form, obj) 
+
+# Create a json error response from a form
+def form_error(request, form, obj):
 	pass
 
 # Parse a PUT request and update an existing object
