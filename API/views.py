@@ -33,3 +33,51 @@ def objects(request):
 	    else:
 		items = simplejson.dumps(dict("error", "invalid input"))
 		return direct_to_template(request, 'api/list.html', {"items":items})
+
+# Check type of request and delegate
+def handle_objects(request, category=None):
+	views = {  "POST" : create_new_object,
+		   "GET" : get_objects,
+		   "PUT" : not_implemented,
+	           "DELETE" : not_implemented,
+		   "HEAD" : not_implemented,
+		   "PATCH" : not_implemented,
+		}
+	return views.get(request.method)(request, category)
+
+# Check type of request and delegate
+def handle_object(request, category=None, objectID=None):
+	views = {  "POST" : not_implemented,
+		   "GET" : get_object,
+		   "PUT" : update_object,
+		   "DELETE" : delete_object,
+		   "HEAD" : not_implemented,
+		   "PATCH" : not_implemented,
+		}
+	return views.get(request.method)(request, category, objectID)	
+
+# Tell the user he is trying to access something that aint there =)
+def not_implemented(request, **kwargs):
+	pass
+
+# Parse a POST request into an object and save it
+def create_new_object(request, category=None):
+	pass
+
+# Parse a PUT request and update an existing object
+def update_object(request, category=None, objectID=None):
+	pass
+
+# Get all objects in a category
+def get_objects(request, category=None, filter=None):
+	pass
+
+# Get a specific object from category and ID
+def get_object(request, category=None):
+	pass
+
+# Delete an object from a category and ID
+def delete_object(request, category=None, objectID=None):
+	pass
+
+
