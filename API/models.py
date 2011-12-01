@@ -4,14 +4,21 @@ class GameObject(db.Model):
 	title = db.StringProperty()
 	description = db.TextProperty()
 	def to_dict(self):
-           return dict([(p, unicode(getattr(self, p))) for p in self.properties()])
+            d = dict()
+            for p in self.properties():
+              try: 
+                d[p] = unicode(getattr(self, p))
+              except UnicodeDecodeError as e:
+                d[p] = "<BLOB DATA>"
+            return d
 
 class Shape(GameObject):
 	width = db.IntegerProperty()
 	height = db.IntegerProperty()
 
 class Graphics(GameObject):
-	url = db.LinkProperty()
+    path = db.TextProperty()
+    picture = db.BlobProperty(default=None)
 
 class VisualGameObject(GameObject):
 	weight = db.FloatProperty()

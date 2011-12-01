@@ -4,7 +4,7 @@
 <div class="alert-message info">  
 <h2 class="page-title"> Generic form </h2> 
 </div>
-<form method="POST" action="/api/objects">    
+<form method="POST" action="/api/objects" enctype="multipart/form-data">    
 {% for field in form reversed %}
 <div class="clearfix">
     {{ field.label }}: {{ field }}
