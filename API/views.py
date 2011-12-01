@@ -4,6 +4,15 @@ from forms import *
 from django.utils import simplejson
 from django.http import HttpResponseRedirect
 
+def showForm(request, form):
+    return direct_to_template(request, 'api/form.html', {"form":form}) 
+    
+def addEnvironment(request):
+    return showForm(request, EnvironmentForm())
+    
+def addVisualGameObject(request):
+    return showForm(request, VisualGameObjectForm())
+    
 def test(request):
     form = GameObjectForm()
     return direct_to_template(request, 'api/form.html', {"form":form}) 

@@ -5,17 +5,14 @@
 <h2 class="page-title"> Generic form </h2> 
 </div>
 <form method="POST" action="/api/objects">    
+{% for field in form reversed %}
 <div class="clearfix">
-    {{ form.title.label }}
-    {{ form.title }}
+    {{ field.label }}: {{ field }}
 </div>
+{% endfor %}
 <div class="clearfix">
-    {{ form.description.label }}
-    {{ form.description }}
+    <div class="input"><input type="submit" value="Create object"/></div>
 </div>
-<div class="clearfix"> <div class="input">
-<input type="submit" value="Create object"/>
-</div></div>
 </form>
 {% endautoescape %}
 {% endblock %}
