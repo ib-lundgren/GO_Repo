@@ -131,7 +131,7 @@ def create_new_object(request, objCls, formCls, **kwargs):
     if form.validate():
         form.populate_obj(obj)
         obj.put()
-        return HttpResponseRedirect("api/" + category)
+        return HttpResponseRedirect("/api/" + objCls.__name__)
     else:
         return form_error(request, form, obj) 
 

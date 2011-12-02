@@ -12,8 +12,9 @@ class GameObject(db.Model):
               except UnicodeDecodeError as e:
                 d[p] = "<BLOB DATA>"
             return d
+   
     def __str__(self):
-            return str(self.key().id()) + ": " + self.title
+            return str(self.key().id())
 
 class Shape(GameObject):
 	width = db.IntegerProperty()
