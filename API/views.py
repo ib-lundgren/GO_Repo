@@ -66,16 +66,14 @@ def handle_objects(request, category=None, **kwargs):
     m = __import__("models", globals(), locals(), [], -1)
     if not hasattr(m, category):
         return invalid_category(request, category)
+    objCls = getattr(m, category)
     
     formName = category + "Form"
     f = __import__("forms", globals(), locals(), [], -1)
     if not hasattr(f, formName):
         return invalid_category(request, category)
-
     formCls = getattr(f, formName)
-    
-    objCls = getattr(m, category)
-
+   
     views = {   "POST" : create_new_object,
                 "GET" : get_objects,
                 "PUT" : not_implemented,
@@ -96,7 +94,6 @@ def handle_object(request, category=None, objectID=None, **kwargs):
     f = __import__("forms", globals(), locals(), [], -1)
     if not hasattr(f, formName):
         return invalid_category(request, category)
-
     formCls = getattr(f, formName)
     
     try:
@@ -118,7 +115,7 @@ def handle_object(request, category=None, objectID=None, **kwargs):
     return views.get(request.method)(request, objCls, obj, formCls=formCls, **kwargs)
     
 # Tell the user he is trying to access something that aint there =)
-def not_implemented(request, **kwargs):
+def not_implemented(request, objCls, obj=None, formCls=None, **kwargs):
     info = { "status" : "error",
              "message" : "unsupported operation" 
            }
@@ -126,14 +123,22 @@ def not_implemented(request, **kwargs):
 
 # Parse a POST request into an object and save it
 def create_new_object(request, objCls, formCls, **kwargs):
+    for k,v in request.FILES:
+        request.POST.appendlist(k,v)
     form = formCls(request.POST)
+    
     obj = objCls()
-    if form.validate():
-        form.populate_obj(obj)
-        obj.put()
-        return HttpResponseRedirect("/api/" + objCls.__name__)
-    else:
-        return form_error(request, form, obj) 
+    try:
+        if form.validate():
+            form.populate_obj(obj)
+            obj.put()
+            return HttpResponseRedirect("/api/" + objCls.__name__)
+        else:
+            return form_error(request, form, obj) 
+    except AttributeError as e:
+        info = { "status" : "error",
+                 "message" : e.message}
+        return json_response(request, info)
 
 # Create a json error response from a form
 def form_error(request, form, obj):
@@ -142,15 +147,22 @@ def form_error(request, form, obj):
     return json_response(request, info)
 
 # Parse a PUT request and update an existing object
-def update_object(request, category, objCls, obj, formCls, **kwargs):
+def update_object(request, objCls, obj, formCls, **kwargs):
+    for k,v in request.FILES:
+        request.POST.appendlist(k,v)
     form = formCls(request.POST) # Django doesnt use PUT
-    if form.validate():
-        form.populate_obj(obj)
-        obj.put()
-        return HttpResponseRedirect("api/" + category)
-    else:
-        return form_error(request, form, obj)
     
+    try:
+        if form.validate():
+            form.populate_obj(obj)
+            obj.put()
+            return HttpResponseRedirect("/api/" + objCls.__name__)
+        else:
+            return form_error(request, form, obj) 
+    except AttributeError as e:
+        info = { "status" : "error",
+                 "message" : e.message}
+        return json_response(request, info)
 
 # Get all objects in a category
 def get_objects(request, objCls, formCls, **kwargs):
