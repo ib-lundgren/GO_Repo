@@ -1,9 +1,9 @@
 from google.appengine.ext import db
 
 class GameObject(db.Model):
-	title = db.StringProperty()
-	description = db.TextProperty()
-	def to_dict(self):
+    title = db.StringProperty()
+    description = db.TextProperty()
+    def to_dict(self):
             d = dict()
             for p in self.properties():
               try: 
@@ -11,6 +11,8 @@ class GameObject(db.Model):
               except UnicodeDecodeError as e:
                 d[p] = "<BLOB DATA>"
             return d
+    def __str__(self):
+            return str(self.key().id()) + ": " + self.title
 
 class Shape(GameObject):
 	width = db.IntegerProperty()
@@ -22,8 +24,7 @@ class Graphics(GameObject):
 
 class VisualGameObject(GameObject):
 	weight = db.FloatProperty()
-	height = db.FloatProperty()
-	shape = db.ReferenceProperty(Shape)
+	#shape = db.ReferenceProperty(Shape)
 	graphics = db.ReferenceProperty(Graphics)
 	created = db.DateTimeProperty(auto_now_add=True)
 	
@@ -44,8 +45,6 @@ class Interaction(GameObject):
 	triggers = set(["enter", "leave", "activate"])
 	trigger = db.StringProperty(choices=triggers)
 	modifier = db.ReferenceProperty(Modifier)
-
-
 
 class Level(GameObject):
 	objects = db.ListProperty(db.Key)

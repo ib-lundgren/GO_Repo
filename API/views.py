@@ -7,21 +7,25 @@ from django.http import HttpResponse, HttpResponseRedirect
 # ----------- TMP START?
 def showGraphics(request, id=None):
   response = HttpResponse()
-  if (id == None):
-    for img in Graphics.all():
-      response.content += '<a href="/' + img.path + '"><img src="/' + img.path + '"/></a><br/>'
-  else:
+  if (id):
     response['Content-Type'] = 'image/png'
     response['Cache-Control'] = 'max-age=7200'
     img = Graphics.get_by_id(int(id))
     if img and img.picture:
       response.content = img.picture
+  else:
+    for img in Graphics.all():
+      response.content += '<a href="/' + img.path + '"><img src="/' + img.path + '"/></a><br/>'  
   return response
 
 def objects(request):
     if request.method == 'GET':
-        items = simplejson.dumps([o.to_dict() for o in Graphics.all()], indent=3)
-        return direct_to_template(request, 'api/list.html', { "items":items})
+        items = simplejson.dumps([o.to_dict() for o in GameObject.all()], indent=3)
+        # jQuery JSON from external URL apparently requires a callback!
+        callback = request.GET.get("callback")
+        if (callback):
+          items = callback + "(" + items + ")"
+        return HttpResponse(items, mimetype='application/json')
     elif request.method == 'POST':
         title = request.POST.get("title")
         description = request.POST.get("description")
@@ -40,20 +44,20 @@ def objects(request):
         return direct_to_template(request, 'api/list.html', {"items":items})
 
 def addEnvironment(request):
-    return showForm(request, EnvironmentForm())
+    return showForm(request, EnvironmentForm(), "Environment")
     
 def addVisualGameObject(request):
-    return showForm(request, VisualGameObjectForm())
+    return showForm(request, VisualGameObjectForm(), "VisualGameObject")
 
 def addGraphicsObject(request):
-    return showForm(request, GraphicsForm())
+    return showForm(request, GraphicsForm(), "objects")
     
 def addGameObject(request):
     form = GameObjectForm()
-    return showForm(request, GameObjectForm())
+    return showForm(request, GameObjectForm(), "GameObject")
 
-def showForm(request, form):
-    return direct_to_template(request, 'api/form.html', {"form":form}) 
+def showForm(request, form, target):
+    return direct_to_template(request, 'api/form.html', {"form":form, "target": "/api/" + target + "/"}) 
 # ----------- TMP STOP
     
     
@@ -79,7 +83,7 @@ def handle_objects(request, category=None):
            "HEAD" : not_implemented,
            "PATCH" : not_implemented,
         }
-    return views.get(request.method)(request, objCls, formCls=formCls)
+    return views.get(request.method)(request, category, objCls, formCls=formCls)
 
 # Check type of request and delegate
 def handle_object(request, category=None, objectID=None):
@@ -106,13 +110,14 @@ def handle_object(request, category=None, objectID=None):
            "HEAD" : not_implemented,
            "PATCH" : not_implemented,
         }
-    return views.get(request.method)(request, objCls, obj, formCls=formCls)    
+    return views.get(request.method)(request, category, objCls, obj, formCls=formCls)
+    
 # Tell the user he is trying to access something that aint there =)
 def not_implemented(request, **kwargs):
     pass
 
 # Parse a POST request into an object and save it
-def create_new_object(request, objCls, formCls):
+def create_new_object(request, category, objCls, formCls):
     form = formCls(request.POST)
     obj = objCls()
     if form.validate():
@@ -131,7 +136,7 @@ def form_error(request, form, obj):
     return direct_to_template(request, "api/error.html", {'info':info})
 
 # Parse a PUT request and update an existing object
-def update_object(request, objCls, obj, formCls):
+def update_object(request, category, objCls, obj, formCls):
     form = formCls(request.PUT)
     if form.validate():
                 form.populate_obj(obj)
@@ -142,14 +147,20 @@ def update_object(request, objCls, obj, formCls):
     
 
 # Get all objects in a category
-def get_objects(request, objCls, formCls):
+def get_objects(request, category, objCls, formCls):
     items = simplejson.dumps([o.to_dict() for o in objCls.all()], indent=3)
-    return direct_to_template(request, "api/list.html", {"items":items})
+    # jQuery JSON from external URL apparently requires a callback!
+    callback = request.GET.get("callback")
+    if (callback):
+      items = callback + "(" + items + ")"
+    return HttpResponse(items, mimetype='application/json')
+    #return direct_to_template(request, "api/list.html", {"items":items})
  
 # Get a specific object from category and ID
-def get_object(request, objCls, obj, formCls):
+def get_object(request, category, objCls, obj, formCls):
     item = simplejson.dumps(obj.to_dict())
-    return direct_to_template(request, "api/single.html", {"item":item}) 
+    return HttpResponse(item, mimetype='application/x-javascript')
+    #return direct_to_template(request, "api/single.html", {"item":item}) 
 
 # Invalid category
 def invalid_category(request, category):
