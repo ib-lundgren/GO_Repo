@@ -5,6 +5,7 @@ class GameObject(db.Model):
     description = db.TextProperty()
     def to_dict(self):
             d = dict()
+            d["id"] = self.key().id()
             for p in self.properties():
               try: 
                 d[p] = unicode(getattr(self, p))
