@@ -62,7 +62,7 @@ def showForm(request, form, target):
     
     
 # Check type of request and delegate
-def handle_objects(request, category=None):
+def handle_objects(request, category=None, **kwargs):
     m = __import__("models", globals(), locals(), [], -1)
     if not hasattr(m, category):
         return invalid_category(request, category)
@@ -76,17 +76,17 @@ def handle_objects(request, category=None):
     
     objCls = getattr(m, category)
 
-    views = {  "POST" : create_new_object,
-           "GET" : get_objects,
-           "PUT" : not_implemented,
-               "DELETE" : not_implemented,
-           "HEAD" : not_implemented,
-           "PATCH" : not_implemented,
+    views = {   "POST" : create_new_object,
+                "GET" : get_objects,
+                "PUT" : not_implemented,
+                "DELETE" : not_implemented,
+                "HEAD" : not_implemented,
+                "PATCH" : not_implemented,
         }
-    return views.get(request.method)(request, category, objCls, formCls=formCls)
+    return views.get(request.method)(request, category, objCls, formCls=formCls, **kwargs)
 
 # Check type of request and delegate
-def handle_object(request, category=None, objectID=None):
+def handle_object(request, category=None, objectID=None, **kwargs):
     m = __import__("models", globals(), locals(), [], -1)
     if not hasattr(m, category):
         return invalid_category(request, category)
@@ -110,14 +110,14 @@ def handle_object(request, category=None, objectID=None):
            "HEAD" : not_implemented,
            "PATCH" : not_implemented,
         }
-    return views.get(request.method)(request, category, objCls, obj, formCls=formCls)
+    return views.get(request.method)(request, category, objCls, obj, formCls=formCls, **kwargs)
     
 # Tell the user he is trying to access something that aint there =)
 def not_implemented(request, **kwargs):
     pass
 
 # Parse a POST request into an object and save it
-def create_new_object(request, category, objCls, formCls):
+def create_new_object(request, category, objCls, formCls, **kwargs):
     form = formCls(request.POST)
     obj = objCls()
     if form.validate():
@@ -136,7 +136,7 @@ def form_error(request, form, obj):
     return direct_to_template(request, "api/error.html", {'info':info})
 
 # Parse a PUT request and update an existing object
-def update_object(request, category, objCls, obj, formCls):
+def update_object(request, category, objCls, obj, formCls, **kwargs):
     form = formCls(request.PUT)
     if form.validate():
                 form.populate_obj(obj)
@@ -147,7 +147,7 @@ def update_object(request, category, objCls, obj, formCls):
     
 
 # Get all objects in a category
-def get_objects(request, category, objCls, formCls):
+def get_objects(request, category, objCls, formCls, **kwargs):
     items = simplejson.dumps([o.to_dict() for o in objCls.all()], indent=3)
     # jQuery JSON from external URL apparently requires a callback!
     callback = request.GET.get("callback")
@@ -157,7 +157,7 @@ def get_objects(request, category, objCls, formCls):
     #return direct_to_template(request, "api/list.html", {"items":items})
  
 # Get a specific object from category and ID
-def get_object(request, category, objCls, obj, formCls):
+def get_object(request, category, objCls, obj, formCls, **kwargs):
     item = simplejson.dumps(obj.to_dict())
     return HttpResponse(item, mimetype='application/x-javascript')
     #return direct_to_template(request, "api/single.html", {"item":item}) 
@@ -173,7 +173,7 @@ def invalid_object(request, category, obj):
     return direct_to_template(request, "api/invalid_object.html", info)
 
 # Delete an object from a category and ID
-def delete_object(request, category=None, objectID=None):
+def delete_object(request, category=None, objectID=None, **kwargs):
      # like get obj but delete and return confirm json
     info = { "msg" : "object X deleted" }
     return direct_to_tempate(request, "api/confirm.html", info)
