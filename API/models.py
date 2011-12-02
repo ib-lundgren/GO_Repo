@@ -10,7 +10,7 @@ class GameObject(db.Model):
               try: 
                 d[p] = unicode(getattr(self, p))
               except UnicodeDecodeError as e:
-                d[p] = "<BLOB DATA>"
+                pass # We add an image url instead
             return d
    
     def __str__(self):

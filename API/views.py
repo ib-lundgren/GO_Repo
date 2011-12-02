@@ -50,7 +50,7 @@ def addVisualGameObject(request):
     return showForm(request, VisualGameObjectForm(), "VisualGameObject")
 
 def addGraphicsObject(request):
-    return showForm(request, GraphicsForm(), "objects")
+    return showForm(request, GraphicsForm(), "Graphics")
     
 def addGameObject(request):
     form = GameObjectForm()
@@ -123,7 +123,7 @@ def not_implemented(request, objCls, obj=None, formCls=None, **kwargs):
 
 # Parse a POST request into an object and save it
 def create_new_object(request, objCls, formCls, **kwargs):
-    for k,v in request.FILES:
+    for k,v in request.FILES.dict():
         request.POST.appendlist(k,v)
     form = formCls(request.POST)
     
@@ -148,7 +148,7 @@ def form_error(request, form, obj):
 
 # Parse a PUT request and update an existing object
 def update_object(request, objCls, obj, formCls, **kwargs):
-    for k,v in request.FILES:
+    for k,v in request.FILES.dict():
         request.POST.appendlist(k,v)
     form = formCls(request.POST) # Django doesnt use PUT
     
