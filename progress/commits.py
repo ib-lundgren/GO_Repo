@@ -1,6 +1,6 @@
 from packages import feedparser
 
-url = "https://github.com/ib-lundgren/Vigostr/commits/master.atom"
+url = "https://github.com/ib-lundgren/GO_Repo/commits/master.atom"
 
 def get_commits():
    feed = feedparser.parse(url)
