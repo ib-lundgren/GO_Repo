@@ -10,38 +10,13 @@ def showGraphics(request, id=None):
   if (id):
     response['Content-Type'] = 'image/png'
     response['Cache-Control'] = 'max-age=7200'
-    img = Graphics.get_by_id(int(id))
+    img = Graphic.get_by_id(int(id))
     if img and img.picture:
       response.content = img.picture
   else:
-    for img in Graphics.all():
+    for img in Graphic.all():
       response.content += '<a href="/' + img.path + '"><img src="/' + img.path + '"/></a><br/>'  
   return response
-
-def objects(request):
-    if request.method == 'GET':
-        items = simplejson.dumps([o.to_dict() for o in GameObject.all()], indent=3)
-        # jQuery JSON from external URL apparently requires a callback!
-        callback = request.GET.get("callback")
-        if (callback):
-          items = callback + "(" + items + ")"
-        return HttpResponse(items, mimetype='application/json')
-    elif request.method == 'POST':
-        title = request.POST.get("title")
-        description = request.POST.get("description")
-        picture = request.FILES.get("picture")
-        if title and description:
-          g = Graphics()
-          g.title = title
-          g.description = description
-          g.picture = picture.read()
-          g.save()
-          g.path = "api/image/" + str(g.key().id())
-          g.put()
-        return HttpResponseRedirect('/api/objects')
-    else:
-        items = simplejson.dumps(dict("error", "invalid input"))
-        return direct_to_template(request, 'api/list.html', {"items":items})
 
 def addEnvironment(request):
     return showForm(request, EnvironmentForm(), "Environment")
@@ -50,7 +25,7 @@ def addVisualGameObject(request):
     return showForm(request, VisualGameObjectForm(), "VisualGameObject")
 
 def addGraphicsObject(request):
-    return showForm(request, GraphicsForm(), "Graphics")
+    return showForm(request, GraphicForm(), "Graphic")
     
 def addGameObject(request):
     form = GameObjectForm()
@@ -63,7 +38,14 @@ def showForm(request, form, target):
     
 # Check type of request and delegate
 def handle_objects(request, category=None, **kwargs):
+    if category:
+        category = category.capitalize()
+
+    # Bit of an ugly hack to remove plural (s) to get classname
+    if category[-1:] == "s":
+        category = category[:-1]
     m = __import__("models", globals(), locals(), [], -1)
+    
     if not hasattr(m, category):
         return invalid_category(request, category)
     objCls = getattr(m, category)
@@ -85,6 +67,13 @@ def handle_objects(request, category=None, **kwargs):
 
 # Check type of request and delegate
 def handle_object(request, category=None, objectID=None, **kwargs):
+    if category:
+        category = category.capitalize()
+    
+    # Bit of an ugly hack to remove plural (s) to get classname
+    if category[-1:] == "s":
+        category = category[:-1]
+
     m = __import__("models", globals(), locals(), [], -1)
     if not hasattr(m, category):
         return invalid_category(request, category)

@@ -20,14 +20,14 @@ class Shape(GameObject):
 	width = db.IntegerProperty()
 	height = db.IntegerProperty()
 
-class Graphics(GameObject):
+class Graphic(GameObject):
     path = db.TextProperty()
     picture = db.BlobProperty(default=None)
 
 class VisualGameObject(GameObject):
 	weight = db.FloatProperty()
 	#shape = db.ReferenceProperty(Shape)
-	graphics = db.ReferenceProperty(Graphics)
+	graphics = db.ReferenceProperty(Graphic)
 	created = db.DateTimeProperty(auto_now_add=True)
 	
 class CompositeGameObject(GameObject):

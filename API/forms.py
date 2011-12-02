@@ -6,17 +6,17 @@ GameObjectForm = model_form(GameObject)
 VisualGameObjectForm = model_form(VisualGameObject)
 EnvironmentForm = model_form(Environment)
 
-BaseGraphicsForm = model_form(Graphics)
-del BaseGraphicsForm.path
+BaseGraphicForm = model_form(Graphic)
+del BaseGraphicForm.path
 
-class GraphicsForm(BaseGraphicsForm):
+class GraphicForm(BaseGraphicForm):
   formdata = None
   
   def __init__(self, data=None):
     self.formdata = copy(data)
     if data:
       data["picture"] = ""
-    super(GraphicsForm,self).__init__(data)
+    super(GraphicForm,self).__init__(data)
 
   def populate_obj(self, obj):
     if self.formdata:
