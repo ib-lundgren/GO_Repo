@@ -123,8 +123,7 @@ def not_implemented(request, objCls, obj=None, formCls=None, **kwargs):
 
 # Parse a POST request into an object and save it
 def create_new_object(request, objCls, formCls, **kwargs):
-    for k,v in request.FILES.dict():
-        request.POST.appendlist(k,v)
+    request.POST.update(request.FILES)
     form = formCls(request.POST)
     
     obj = objCls()
@@ -148,8 +147,7 @@ def form_error(request, form, obj):
 
 # Parse a PUT request and update an existing object
 def update_object(request, objCls, obj, formCls, **kwargs):
-    for k,v in request.FILES.dict():
-        request.POST.appendlist(k,v)
+    request.POST.update(request.FILES)
     form = formCls(request.POST) # Django doesnt use PUT
     
     try:

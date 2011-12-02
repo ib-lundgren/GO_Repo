@@ -8,7 +8,7 @@ from API.views import *
 
 urlpatterns = patterns('',
     (r'^$', index),
-    (r'api/objects', objects),
+    #(r'api/objects', objects),
     (r'api/add/Graphics', addGraphicsObject),
     (r'api/add/Environment', addEnvironment),
     (r'api/add/GameObject', addGameObject),
