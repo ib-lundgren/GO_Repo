@@ -34,28 +34,22 @@ def addGameObject(request):
 def showForm(request, form, target):
     return direct_to_template(request, 'api/form.html', {"form":form, "target": "/api/" + target + "/"}) 
 # ----------- TMP STOP
-    
-    
+
 # Check type of request and delegate
 def handle_objects(request, category=None, **kwargs):
-    if category:
-        category = category.capitalize()
-
     # Bit of an ugly hack to remove plural (s) to get classname
-    if category[-1:] == "s":
+    if category.lower().endswith('s'):
         category = category[:-1]
-    m = __import__("models", globals(), locals(), [], -1)
-    
-    if not hasattr(m, category):
-        return invalid_category(request, category)
-    objCls = getattr(m, category)
-    
+
+    objCls = getattr_nocase("models", category)
+    if not objCls:
+      return invalid_category(request, category)
+
     formName = category + "Form"
-    f = __import__("forms", globals(), locals(), [], -1)
-    if not hasattr(f, formName):
-        return invalid_category(request, category)
-    formCls = getattr(f, formName)
-   
+    formCls = getattr_nocase("forms", formName)
+    if not formCls:
+      return invalid_category(request, formName)    
+
     views = {   "POST" : create_new_object,
                 "GET" : get_objects,
                 "PUT" : not_implemented,
@@ -69,21 +63,19 @@ def handle_objects(request, category=None, **kwargs):
 def handle_object(request, category=None, objectID=None, **kwargs):
     if category:
         category = category.capitalize()
-    
+
     # Bit of an ugly hack to remove plural (s) to get classname
-    if category[-1:] == "s":
+    if category.lower().endswith('s'):
         category = category[:-1]
 
-    m = __import__("models", globals(), locals(), [], -1)
-    if not hasattr(m, category):
-        return invalid_category(request, category)
-    objCls = getattr(m, category)
-    
+    objCls = getattr_nocase("models", category)
+    if not objCls:
+      return invalid_category(request, category)
+
     formName = category + "Form"
-    f = __import__("forms", globals(), locals(), [], -1)
-    if not hasattr(f, formName):
-        return invalid_category(request, category)
-    formCls = getattr(f, formName)
+    formCls = getattr_nocase("forms", formName)
+    if not formCls:
+      return invalid_category(request, formName)
     
     try:
         objectID = int(objectID)
@@ -102,7 +94,18 @@ def handle_object(request, category=None, objectID=None, **kwargs):
                 "PATCH" : not_implemented,
         }
     return views.get(request.method)(request, objCls, obj, formCls=formCls, **kwargs)
-    
+
+def getattr_nocase(module, name):
+  varList = __import__(module, globals(), locals(), [], -1)
+  className = get_class_name_nocase(name, varList)
+  if className:
+    return getattr(varList, className)
+
+def get_class_name_nocase(name, classStr):
+  for c in dir(classStr):
+    if name.lower() == c.lower():
+      return c
+
 # Tell the user he is trying to access something that aint there =)
 def not_implemented(request, objCls, obj=None, formCls=None, **kwargs):
     info = { "status" : "error",
