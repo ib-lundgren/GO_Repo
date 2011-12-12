@@ -2,9 +2,8 @@ from django.conf.urls.defaults import patterns, include, url
 from info.views import index, plan, repo, doc, contact
 from progress.views import progress
 from API.views import *
-# Uncomment the next two lines to enable the admin:
-# from django.contrib import admin
-# admin.autodiscover()
+from editor.views import *
+from browser.views import *
 
 urlpatterns = patterns('',
     (r'^$', index),
@@ -13,6 +12,7 @@ urlpatterns = patterns('',
     (r'api/add/GameObject', addGameObject),
     (r'api/add/VisualGameObject', addVisualGameObject),
     (r'api/image[s]*/(\d+)?', showGraphics),
+    (r'^create/environment$', create_environment),
     (r'^api/(?P<category>\w+)/(?P<objectID>\d+)/$', handle_object),
     (r'^api/(?P<category>\w+)/(?P<filter>\w+)/$', handle_objects),
     (r'^api/(?P<category>\w+)/$', handle_objects),

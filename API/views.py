@@ -2,7 +2,7 @@ from django.views.generic.simple import direct_to_template
 from models import *
 from forms import *
 from django.utils import simplejson
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, QueryDict
 
 # ----------- TMP START?
 def showGraphics(request, id=None):
@@ -111,36 +111,39 @@ def not_implemented(request, objCls, obj=None, formCls=None, **kwargs):
     info = { "status" : "error",
              "message" : "unsupported operation" 
            }
-    return json_response(request, info)
+    return json_response(request, info, 404)
 
 # Parse a POST request into an object and save it
 def create_new_object(request, objCls, formCls, **kwargs):
-    request.POST.update(request.FILES)
-    form = formCls(request.POST)
+    data = request.POST.copy()
+    data.update(request.FILES)
+    form = formCls(data)
     
     obj = objCls()
     try:
         if form.validate():
             form.populate_obj(obj)
             obj.put()
-            return HttpResponseRedirect("/api/" + objCls.__name__)
+            return json_response(request, obj.to_dict(), 201)
         else:
             return form_error(request, form, obj) 
     except AttributeError as e:
+        raise
         info = { "status" : "error",
-                 "message" : e.message}
-        return json_response(request, info)
+                 "message" : e.args}
+        return json_response(request, info, 400)
 
 # Create a json error response from a form
 def form_error(request, form, obj):
     info = { "status" : "error",
-             "messsage" : form.errors }
-    return json_response(request, info)
+             "message" : form.errors }
+    return json_response(request, info, 400)
 
 # Parse a PUT request and update an existing object
 def update_object(request, objCls, obj, formCls, **kwargs):
-    request.POST.update(request.FILES)
-    form = formCls(request.POST) # Django doesnt use PUT
+    data = request.POST.copy()
+    data.update(request.FILES)
+    form = formCls(data)
     
     try:
         if form.validate():
@@ -151,29 +154,29 @@ def update_object(request, objCls, obj, formCls, **kwargs):
             return form_error(request, form, obj) 
     except AttributeError as e:
         info = { "status" : "error",
-                 "message" : e.message}
-        return json_response(request, info)
+                 "message" : e.args}
+        return json_response(request, info, 400)
 
 # Get all objects in a category
 def get_objects(request, objCls, formCls, **kwargs):
     items = [o.to_dict() for o in objCls.all()]
-    return json_response(request, items)    
+    return json_response(request, items, 200)    
  
 # Get a specific object from category and ID
 def get_object(request, objCls, obj, formCls, **kwargs):
-    return json_response(request, obj.to_dict())
+    return json_response(request, obj.to_dict(), 200)
 
 # Invalid category
 def invalid_category(request, category):
     info = { "status" : "error", 
              "message" : "Invalid category %s" % category}
-    return json_response(request, info)
+    return json_response(request, info, 404)
 
 # Invalid object
 def invalid_object(request, category, obj):
     info = { "status" : "error",
              "message" : "Invalid object from category %s" % category}
-    return json_response(request, info)
+    return json_response(request, info), 404
 
 # Delete an object from a category and ID
 def delete_object(request, objCls, obj, formCls, **kwargs):
@@ -182,14 +185,14 @@ def delete_object(request, objCls, obj, formCls, **kwargs):
     except NotSavedError:
         info = { "status" : "error",
                  "message" : "object not saved" }
-        return json_response(request, info)
+        return json_response(request, info, 404)
 
     info = { "status" : "ok",
              "message" : "object deleted" }
-    return json_response(request, info)
+    return json_response(request, info, 200)
 
 # Return a json HttpResponse from dict
-def json_response(request, info, **kwargs):
+def json_response(request, info, status=200, **kwargs):
     json = simplejson.dumps(info, indent=3)
     # For some reason Django puts all raw data in POST instead
     # of where it "should be" imo
@@ -203,4 +206,4 @@ def json_response(request, info, **kwargs):
     callback = methods.get(request.method).get("callback")
     if callback:
         json = callback + "(" + json + ")"
-    return HttpResponse(json, mimetype="application/json")    
+    return HttpResponse(json, mimetype="application/json", status=status)    

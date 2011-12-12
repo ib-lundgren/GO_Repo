@@ -1,0 +1,609 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="alert-message info">  
+    <h2 class="page-title"> {{ page_header }} </h2> 
+</div>   
+
+<form id="environment-form" name="environment-form" action="">
+
+<div class="clearfix">
+    <label for="title"> Title </label>
+    <div class="input">
+        <input class="xlarge" id="title" name="title" size="20" type="text"/>
+    <span class="help-block">What would you like to call this object?</span>
+    </div>
+</div>
+
+<div class="clearfix">
+    <label for="description"> Description </label>
+    <div class="input">
+        <textarea class="xlarge" id="description" name="description" rows="3"></textarea>
+        <span class="help-block">
+            Describe the object and how you intend it to be used. 
+        </span>
+    </div>
+</div>
+
+<div class="clearfix">
+    <label for="graphic"> Graphic </label>
+    <div class="input">
+    <ul class="media-grid">
+    </ul>    
+    <input type="hidden" name="graphic" id="graphic" value=""/>
+        <br/>
+        <button class="btn info" id="prev-graphic" name="prev-graphic" size="30"> Previous </button>
+        <button class="btn info" id="next-graphic" name="next-graphic" size="30"> Next </button>
+        <button class="btn success" data-controls-modal="new-graphic" data-backdrop="static" data-keyboard="true" id="create-new-graphic" name="create-new-graphic" size="30"> Create new graphic </button>
+    </div>
+</div>
+
+
+<div class="clearfix">
+    <label for="width"> Width </label>
+    <div class="input">
+        <input class="small" id="width" name="width" size="20" type="text"/>
+    <span class="help-block">Used mainly for layouting or basic collision detection</span>
+    </div>
+</div>
+
+<div class="clearfix">
+    <label for="height"> Height </label>
+    <div class="input">
+        <input class="small" id="height" name="height" size="20" type="text"/>
+    <span class="help-block">Used mainly for layouting or basic collision detection</span>
+    </div>
+</div>
+
+<div class="clearfix">
+    <label for="weight"> Weight </label>
+    <div class="input">
+        <input class="small" id="weight" name="weight" size="20" type="text"/>
+    <span class="help-block">Can be used by the physics engine to calculate fall speed</span>
+    </div>
+</div>
+
+<div class="clearfix">
+    <label id="physical_state"> Physical state</label>
+    <div class="input">
+        <ul class="inputs-list">
+            <li>
+                <label>
+                    <input type="radio" checked="" name="physical_state" value="solid">
+                    <span>Solid</span>
+                </label>
+            </li>
+            <li>
+                <label>
+                    <input type="radio" name="physical_state" value="liquid">
+                    <span>Liquid</span>
+                </label>
+            </li>
+            <li>
+                <label>
+                    <input type="radio" name="physical_state" value="liquid">
+                    <span>Gas</span>
+                </label>
+            </li>
+        </ul>
+    </div>
+</div>
+
+<div class="clearfix">
+    <label id="location_state"> Location state</label>
+    <div class="input">
+        <ul class="inputs-list">
+            <li>
+                <label>
+                    <input type="radio" checked="" name="location_state" value="static">
+                    <span>Static: It is not affected by physics (background)</span>
+                </label>
+            </li>
+            <li>
+                <label>
+                    <input type="radio" name="location_state" value="dynamic">
+                    <span>Dynamic: It is affected by physics (water, falling rocks)</span>
+                </label>
+            </li>
+        </ul>
+    </div>
+</div>
+
+<div class="clearfix">
+    <label for="interactions">Interactions</label>
+    <div class="input">
+        <select class="xlarge" size="10" multiple="multiple" name="interactions" id="interactions">
+        </select> 
+        <span class="help-block">
+            Interactions are things that happen when someone enters, leaves, activates<br/> or in other ways interact with the environment. 
+        </span>
+        <br/>
+        <button class="btn success" data-controls-modal="new-interaction" data-backdrop="static" data-keyboard="true" id="create-new-interaction" name="create-new-interaction" size="30"> Create new interaction </button>
+    </div>
+</div>
+
+<div class="clearfix">
+    <label for="extra"> Extra information </label>
+    <div class="input">
+        <textarea class="xlarge" id="extra" name="extra" rows="3"></textarea>
+        <span class="help-block">
+            Describe other properties of this object. If this will be parsed, consider using json.
+        </span>
+    </div>
+</div>
+<div class="actions">
+    <div class="input">
+        <button class="btn danger" name="environment-cancel" id="environment-cancel"> Cancel </button>
+        <button class="btn primary" name="environment-submit" id="environment-submit"> Create </button>
+    </div>
+</div>
+
+</form>
+
+
+<div id="new-graphic" class="modal hide">
+    <form id="graphic-form" name="graphic-form" action="" enctype="multipart/form-data">
+    <div class="modal-header">
+    <a href="#" class="close">&times;</a> 
+    <h3> Create new Graphic Object </h3>
+    </div>
+    <div class="modal-body">
+        <div class="clearfix">
+            <label for="title"> Title </label>
+            <div class="input">
+                <input class="xlarge" id="title" name="title" size="20" type="text"/>
+            <span class="help-block">What would you like to call this object?</span>
+            </div>
+        </div>
+
+        <div class="clearfix">
+            <label for="description"> Description </label>
+            <div class="input">
+                <textarea class="xlarge" id="description" name="description" rows="3"></textarea>
+                <span class="help-block">
+                    Describe the object and how you intend it to be used. 
+                </span>
+            </div>
+        </div>
+
+        <div class="clearfix">
+            <label for="picture"> Image </label>
+            <div class="input">
+                <input class="xlarge" id="picture" name="picture" size="20" type="file"/>
+            <span class="help-block">The image you want to use</span>
+            </div>
+        </div>
+
+        <div class="clearfix">
+            <label for="extra"> Extra information </label>
+            <div class="input">
+                <textarea class="xlarge" id="extra" name="extra" rows="3"></textarea>
+                <span class="help-block">
+                    Describe other properties of this object. <br/>If this will be parsed, consider using json.
+                </span>
+            </div>
+        </div>
+    <div class="modal-footer">
+        <button class="btn danger" name="graphic-cancel" id="graphic-cancel"> Cancel </button>
+        <button class="btn primary" name="graphic-submit" id="graphic-submit"> Create </button>
+    </div>
+    </form>
+</div>
+
+<div id="new-interaction" class="modal hide">
+    <form id="interaction-form" name="interaction-form" action="">
+    <div class="modal-header">
+    <a href="#" class="close">&times;</a> 
+    <h3> Create a new Interaction Object </p>
+    </div>
+    <div class="modal-body">
+        <div class="clearfix">
+            <label for="title"> Title </label>
+            <div class="input">
+                <input class="xlarge" id="title" name="title" size="20" type="text"/>
+            <span class="help-block">What would you like to call this object?</span>
+            </div>
+        </div>
+
+        <div class="clearfix">
+            <label for="description"> Description </label>
+            <div class="input">
+                <textarea class="xlarge" id="description" name="description" rows="3"></textarea>
+                <span class="help-block">
+                    Describe the object and how you intend it to be used. 
+                </span>
+            </div>
+        </div>
+
+        <div class="clearfix">
+            <label for="trigger">Trigger</label>
+            <div class="input">
+                <select name="trigger" id="trigger">
+                        <option value="enter"> Enter </option>
+                        <option value="leave"> Leave </option>
+                        <option value="activate"> Activate </option>
+                </select>
+                <span class="help-block">
+                    On what action will the modifier be activated/triggered?
+                </span>
+            </div>
+        </div>
+
+        <div class="clearfix">
+            <label for="modifier"> Action </label>
+            <div class="input">
+                <textarea class="xlarge" id="action" name="action" rows="10">function(game_object, callee) {
+   # do something with the game object
+}
+                </textarea>
+                <span class="help-block">
+                    An action can be anything but is usually a javascript function.
+                </span>
+            </div>
+        </div>
+        <div class="clearfix">
+            <label for="extra"> Extra information </label>
+            <div class="input">
+                <textarea class="xlarge" id="extra" name="extra" rows="3"></textarea>
+                <span class="help-block">
+                    Describe other properties of this object. <br/>If this will be parsed, consider using json.
+                </span>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button class="btn danger" name="interaction-cancel" id="interaction-cancel"> Cancel </button>
+        <button class="btn primary" name="interaction-submit" id="interaction-submit"> Create </button>
+    </div>
+    </form>
+</div>
+    <script src="http://twitter.github.com/bootstrap/1.4.0/bootstrap-modal.js"></script>
+<script type="text/javascript">
+    $.getJSON("/api/Graphic", function(data, textStatus, xhr) {
+        $(".media-grid li").remove();        
+        for (var i=0; i < data.length; i++) {
+            var g = data[i];
+            var li = $("<li>");
+            var a = $("<a>");
+            a.attr("id", g.key);
+            a.click(function(e) {
+                console.log(a);
+                e.preventDefault();
+                $("#environment-form #graphic").parent().parent().removeClass("error");
+                $(".media-grid a").css("background", "white");
+                $("#environment-form #" + this.id).css("background", "black");
+                $("#environment-form #graphic").val(this.id);
+
+            });
+            var img = $("<img>"); 
+            img.attr("src", "/" + g.path);
+            img.attr("alt", g.description);
+            img.attr("title", g.title);
+            img.attr("width", "90");
+            img.attr("height", "90");
+            a.append(img)
+            li.append(a);            
+            $(".media-grid").append(li);
+        }
+    });
+
+    $.getJSON("/api/Interaction", function(data, textStatus, xhr) {
+        $("#interactions option").remove();
+        for (var j=0; j < data.length; j++) {
+            var i = data[j];
+            var opt = $("<option>");
+            opt.attr("value", i.key);
+            opt.attr("name", i.key);
+            opt.attr("id", i.key);
+            opt.attr("title", i.description);
+            opt.html(i.title);
+            $("#interactions").append(opt);
+        }
+    });
+
+    $("#environment-form input[type=text]").keyup(function (e) {
+        if (this.value != "") {
+            not_empty("#environment-form #" + this.id);
+        }
+    });
+
+    $("#environment-form textarea").keyup(function (e) {
+        if (this.text != "") {
+            not_empty("#environment-form #" + this.id);
+        }
+    });
+
+
+    function not_empty(selector) {
+        var val = $(selector).val();
+        if (!val) {
+            $(selector).parent().parent().addClass("error");
+            return false;
+        } 
+        else {
+            $(selector).parent().parent().removeClass("error");
+            return true;
+        }
+    }
+
+    function has_selected(selector) {
+        var val = $(selector).val();
+        if (!val) {
+            $(selector).parent().parent().addClass("error");
+            return false;
+        } 
+        else {
+            $(selector).parent().parent().removeClass("error");
+            return true;
+        }
+    }
+
+    function is_integer(selector) {
+        var val = $(selector).val();
+        var int_pattern = /\d+/;
+        if (!int_pattern.test(val)) {
+            $(selector).parent().parent().addClass("error");
+            return false;
+        }
+        else {
+            $(selector).parent().parent().removeClass("error");
+            return true;
+        }
+    }
+
+    function is_array(selector) {
+        val = $(selector).val();
+        if (!(val instanceof Array)) {
+            // Will likely be null from no selection, simply override the form value and return ok
+            $(selector).val("[]");
+            return true;
+        }
+        else {
+            return true;
+        } 
+    }
+
+    function is_float(selector) {
+        var val = $(selector).val();
+        var float_pattern = /\d+\.?\d*/;
+        if (!(float_pattern.test(val))) {
+            $(selector).parent().parent().addClass("error");
+            return false;
+        }
+        else {
+            $(selector).parent().parent().removeClass("error");
+            return true;
+        }
+    }
+
+    var actions = { "200" : object_updated,
+                    "201" : object_created,
+                    "400" : validation_failed,
+                    "500" : error,
+                  }
+    
+    var environment_form = {    url : "/api/Environment/",
+                                method : "POST",
+                                dataType : "json",
+                                actions : actions,     
+                                fields : [  {   id : "title",
+                                                selector : "#environment-form #title",
+                                                validators : [ not_empty, ],
+                                            },
+                                            {   id : "description",
+                                                selector : "#environment-form #description",
+                                                validators : [ not_empty, ],
+                                            },
+                                            {   id : "width",
+                                                selector : "#environment-form #width", 
+                                                validators : [ not_empty, is_float, ],
+                                            },
+                                            {   id : "height",
+                                                selector : "#environment-form #height",
+                                                validators : [ not_empty, is_float, ],
+                                            },
+                                            {   id : "weight",
+                                                selector : "#environment-form #weight",
+                                                validators : [ not_empty, is_float, ],
+                                            },
+                                            {   id : "physical_state",
+                                                selector : "input[name='physical_state']:checked",
+                                                validators : [ has_selected, ],
+                                            },
+                                            {   id : "location_state",
+                                                selector : "input[name='location_state']:checked",
+                                                validators : [ has_selected, ],
+                                            },
+                                            {   id : "graphic",
+                                                selector : "#environment-form #graphic",
+                                                validators : [ not_empty, ],
+                                            },
+                                            {   
+                                                id : "interactions",
+                                                selector : "#environment-form #interactions",
+                                                validators : [ is_array, ],
+                                            },
+                                            {   id : "extra",
+                                                selector : "#environment-form #extra",
+                                                validators : [],
+                                            },
+                                         ],   
+                                            
+    }
+
+    var graphic_form = {    url : "/api/Graphic/",
+                            method : "POST",
+                            actions : actions,
+                            dataType : "json",
+                            fields : [  {   id : "title",
+                                            selector : "#graphic-form #title",
+                                            validators : [ not_empty, ],
+                                        },
+                                        {   id : "description",
+                                            selector : "#graphic-form #description",
+                                            validators : [ not_empty, ],
+                                        },
+                                        {
+                                            id : "picture",
+                                            selector : "#graphic-form #picture",
+                                            validators : [ not_empty, ],
+                                        },
+                                        {   id : "extra",
+                                            selector : "#graphic-form #extra",
+                                            validators : [],
+                                        },
+                                     ],
+    }
+
+    var interaction_form = {    url : "/api/Interaction/",
+                                method : "POST",
+                                actions : actions,
+                                dataType : "json",
+                                fields : [  {   id : "title",
+                                                selector : "#interaction-form #title",
+                                                validators : [ not_empty, ],
+                                            },
+                                            {   id : "description",
+                                                selector : "#interaction-form #description",
+                                                validators : [ not_empty, ],
+                                            },
+                                            {   id : "action",
+                                                selector : "#interaction-form #action",
+                                                validators : [ not_empty, ],
+                                            },
+                                            {   id : "trigger",
+                                                selector : "select[name=trigger]",
+                                                validators : [ not_empty, ],
+                                            },
+                                            {   id : "extra",
+                                                selector : "#interaction-form #extra",
+                                                validators : [],
+                                            },
+                                         ],
+    }
+
+    $("#environment-form").submit(function(e) {
+        var data = validate_form(environment_form);
+        if (data != null) { 
+            send_ajax(environment_form, data);
+        }
+        return false;
+    });
+
+    $("#graphic-form").submit(function(e) {
+        var data = validate_form(graphic_form);
+        if (data != null) {
+            send_iframe(graphic_form, data, "#graphic-form"); // needed because of file upload
+            $("#new-graphic").modal("hide");
+            return true; // we are actually sending the form this time, using an iframe
+        }
+        return false;
+    });
+
+    $("#interaction-form").submit(function(e) {
+        var data = validate_form(interaction_form);
+        if (data != null) {
+            send_ajax(interaction_form, data);
+            $("#new-interaction").modal("hide");
+        }
+        return false;
+    });
+
+    // Validate all fields in the form 
+    // If validation is ok, the form is returned with an additional field, data
+    // If validation fails, null is returned
+    function validate_form(form) {
+        var clean_data = {};
+        var field = null;
+        var errors = false; // Track if any error occured for any field
+        for (var i = 0; i < form.fields.length; i++) {
+            field = form.fields[i];
+            var val_ok = false;
+            var error = false; // Track if any error occured for a particular field
+
+            // Go through all validators for the field
+            for (var j = 0; j < field.validators.length; j++) {
+                val_ok = (field.validators[j])(field.selector);
+                error |= !val_ok;                
+            }
+            // If validation succeded, add member to data 
+            if (!error) {
+                clean_data[field.id] = $(field.selector).val();
+            }
+            else {                
+                errors = true;
+            }
+        }
+
+        // BEWARE: Since jquery gets null instead of [] from a select we will overwrite null with []
+        for (var key in clean_data) {
+            if (clean_data[key] == null) {
+                clean_data[key] = [];
+            }
+        }
+
+        console.log(clean_data);
+        if (!errors) {
+            console.log("Validation succeded");
+            return clean_data;
+        }
+        else {
+            console.log("Validation failed");
+            return null;
+        }
+    }
+
+    function send_ajax(form_data, clean_data) {
+        $.ajax({type: form_data.method,
+                url : form_data.url,
+                dataType : form_data.dataType,
+                data : clean_data,
+                statusCode : form_data.actions,
+        });                        
+    }
+
+    function send_iframe(form_data, clean_data, form_id) {
+        var iframe = $("<iframe>");
+        iframe.attr("id", "our_secret_iframe");
+        iframe.attr("name", "our_secret_iframe");
+        iframe.attr("src", "#");
+        iframe.attr("width", "0");
+        iframe.attr("height", "0");
+        iframe.css("display: none; visibility:hidden;");
+
+        var form = $(form_id);
+        form.attr("method", form_data.method);
+        form.attr("action", form_data.url);
+        form.attr("target", "our_secret_iframe");
+        form.after(iframe);
+    }
+
+    function object_created(res, textStatus, xhr) {
+        console.log("new object created");
+    }
+
+    function object_updated(res, textStatus, xhr) {
+        console.log("object was updated");
+    }
+
+    function validation_failed(res, textStatus, xhr) {
+        console.log("validation failed");
+        var data = $.parseJSON(res.responseText);
+        console.log(data);
+        for (var key in data.message) {
+            $("#environment-form #"+key).parent().parent().addClass("error");
+            var msg = $("<span>");
+            msg.addClass("help-block");
+            msg.attr("name", "error-block");
+            msg.html(data.message[key][0]);
+            $("#environment-form #"+key).after(msg);
+        }
+
+    }
+
+    function error(res, textStatus, xhr) {
+        console.log("error");
+        console.log(res.responseText);
+    }
+
+</script>
+{% endblock %}

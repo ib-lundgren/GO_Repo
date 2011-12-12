@@ -12,6 +12,7 @@ class GameObject(db.Model):
     def to_dict(self):
             d = dict()
             d["id"] = self.key().id()
+            d["key"] = str(self.key())
             for p in self.properties():
               try: 
                 d[p] = unicode(getattr(self, p))
@@ -30,7 +31,7 @@ class VisualGameObject(GameObject):
     weight = db.FloatProperty()
     width = db.FloatProperty()
     height = db.FloatProperty()
-    graphics = db.ReferenceProperty(Graphic)
+    graphic = db.ReferenceProperty(Graphic)
 
 class CompositeGameObject(GameObject):
     objects = db.ListProperty(db.Key)
@@ -48,7 +49,7 @@ class Environment(VisualGameObject):
 class Interaction(GameObject):	
     triggers = set(["enter", "leave", "activate"])
     trigger = db.StringProperty(choices=triggers)
-    modifier = db.ReferenceProperty(Modifier)
+    action = db.TextProperty()
 
 class Level(GameObject):
     objects = db.ListProperty(db.Key)
