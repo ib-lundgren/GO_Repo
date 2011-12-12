@@ -1,22 +1,72 @@
 {% extends "base.html" %}
+{% block header %}
+<style type="text/css">
+    dd {
+        margin-bottom: 10px;
+        margin-top: 10px;
+    }
+</style>
+{% endblock %}
+
 {% block content %}
 <div class="alert-message info">  
 <h2 class="page-title"> Documentation </h2> 
 </div>
-<p> We will update this section with tutorials, examples, API reference etc in due time. 
-<p> Everything we develop will be open source under a licence yet to be determined (likely agpl or lagpl if there is one). </p>
-<br/>
-<h3> Installing a clone of Vigostr on appengine </h3><br/>
+
+<h3> Tutorial </h3>
+
+<p> <a href="#"> A demo game created using game objects, html5 and javascript.</a></p> 
+
+<h3> Using the Game Object Repository API </h3>
+
+<p>Game objects can be created using the <a href="#">Game Object Editor</a>, then you only need to login using your Google account and edit away!</p>
+
+<p>If you want to interact with the API directly, you do so using an API key. You can obtain an API key by logging in with your Google account and requesting one on our <a href="#"> API key request</a> page. </p>
+
+<h4> An overview of the API </h4>
+
+<p>We currently support GOs in the following categories; Graphic, Environment, Character, Equipment, Level, Mission, Vehicle, Interaction, ....</p>
+
+<p> If an invalid category or non existing object is requested, an error message (json) will be returned (HTTP 404). </p>
+
+<dl>
+    <dt> GET - /api/&lt;category&gt; </dt>
+    <dd> <p>Returns a json list of objects in &lt;category&gt; (HTTP 200).</p>
+    <pre class="prettyprint">
+curl -X "GET" https://go-repo.appspot.com/api/Environment/</pre></dd>
+   
+    <dt> POST - /api/&lt;category&gt; </dt>
+    <dd><p> Creates a new object of &lt;category&gt; type, returns a json representation of the object (HTTP 201) or an error message if the form was invalid (HTTP 400).</p>
+    <pre class="prettyprint">
+curl -X "POST" -d "title=example&description=this is a test&trigger=Enter&action=hello world&api_key=sdf7yf" https:/go-repo.appspot.com/api/Interaction/</pre></dd>
+
+    <dt> GET - /api/&lt;category&gt;/&lt;id&gt;/ </dt>
+    <dd><p> Returns a json representation of the object with id=&lt;id&gt; in &lt;category&gt; (HTTP 200). </p>
+    <pre class="prettyprint">curl -X "GET" https://go-repo.appspot.com/api/Interaction/401/</pre></dd>
+
+    <dt> PUT - /api/&lt;category&gt;/&lt;id&gt;/ </dt>
+    <dd> <p> Updates an existing object, parameters and error messages are identical to creating a new object.</p> <pre class="prettyprint">curl -X "PUT" -d "...." https://go-repo.appspot.com/api/Interaction/39487234/ </pre></dd>
+
+    <dt> DELETE - /api/&lt;category&gt;/&lt;id&gt;/ </dt>
+    <dd> <p>Deletes an object, this will only succeed if the creator of the object is the one requesting deletion. Returns a delete successfull message (HTTP 200) or an unauthorized message (HTTP 401).</p> <pre class="prettyprint">curl -X "DELETE" -d "api_key=23762349" https://go-repo.appspot.com/api/Mission/2348933/ </pre></dd>
+
+    <dt> POST - /api/&lt;category&gt;/&lt;id&gt;/ </dt>
+    <dd> <p>Adds references to other objects to an object. For example, a character can have a range of different equipment objects. Returns a representation of the updated object (HTTP 200) or an error message if the update fails (HTTP 400).</p><pre class="prettyprint">curl -X "POST" -d "equipment=234234234, 346346346, 346666zsdf" https://go-repo.appspot.com/api/Character/39857234/</pre></dd>
+
+</dl>
+
+
+<h3> Installing a clone of GO-Repo on appengine </h3><br/>
 <p> Install the <a href="http://code.google.com/appengine/downloads.html#Google_App_Engine_SDK_for_Python">Python Appengine SDK</a> and make sure appcfg.py and dev_appserver.py is on your path and marked as executable. You will also need Python and Git.</p><br/>
 <p> Get the source code for the website </p>
 <pre class="prettyprint">
-git clone git://github.com/ib-lundgren/Vigostr.git
+git clone git://github.com/ib-lundgren/GO_Repo.git
 </pre>
-<p> Change the app.yaml name field to match your appspot name (unless you are an admin for Vigostr, then just leave it). Upload to appspot using appcfg.py or try it out locally with dev_appserver.py </p>
+<p> Change the app.yaml name field to match your appspot name. Upload to appspot using appcfg.py or try it out locally with dev_appserver.py </p>
 <br/>
 <pre class="prettyprint">
-$ dev_appserver.py Vigostr/
-$ appcfg.py update Vigostr/
+$ dev_appserver.py GO_Repo/
+$ appcfg.py update GO_Repo/
 </pre>
 {% endblock %}
 
