@@ -86,7 +86,7 @@ def handle_object(request, category=None, objectID=None, **kwargs):
     if not obj:
         return invalid_object(request, category, objectID)
 
-    views = {   "POST" : not_implemented,
+    views = {   "POST" : add_to_list,
                 "GET" : get_object,
                 "PUT" : update_object,
                 "DELETE" : delete_object,
@@ -100,11 +100,14 @@ def getattr_nocase(module, name):
   className = get_class_name_nocase(name, varList)
   if className:
     return getattr(varList, className)
+  else:
+    return None
 
 def get_class_name_nocase(name, classStr):
   for c in dir(classStr):
     if name.lower() == c.lower():
       return c
+  return None
 
 # Tell the user he is trying to access something that aint there =)
 def not_implemented(request, objCls, obj=None, formCls=None, **kwargs):
@@ -162,6 +165,45 @@ def get_objects(request, objCls, formCls, **kwargs):
     items = [o.to_dict() for o in objCls.all()]
     return json_response(request, items, 200)    
  
+
+# Add an object reference to a list of references in this object
+# POST request specific, no forms needed
+def add_to_list(request, objCls, obj, formCls, **kwargs):
+    target = request.POST.get("list", None)
+    obj_keys = request.POST.get("keys", None)
+    obj_cat = request.POST.get("cat", None)
+
+    for prop in objCls.properties():
+        if prop == target:
+            goCls = getattr_nocase("models", obj_cat)              
+
+            # Check if the category matches an object class
+            if not goCls:
+                context = { "status" : "error",
+                            "message" : "invalid object type in cat, type was %s" % goCat}
+                return json_response(request, context, 400)
+
+            # Get objects from the database, skip empty values
+            try:
+                objs = goCls.get([obj_key for obj_key in obj_keys.split(",") if obj_key])
+            except KindError as e:
+                context = { "status" : "error", 
+                            "message" : "invalid key found, trace was %s" % e}
+                return json_response(request, context, 400)
+
+            # Add the objects to our list property
+            getattr(obj, prop).extend([o.key() for o in objs if o]) 
+            obj.put()
+
+            # Return a representation of the updated object
+            return json_response(request, obj.to_dict(), 200)
+           
+    # Invalid property
+    context = { "status" : "error",
+                "message" : "invalid property %s" % target} 
+    return json_response(request, context, 400)
+        
+
 # Get a specific object from category and ID
 def get_object(request, objCls, obj, formCls, **kwargs):
     return json_response(request, obj.to_dict(), 200)

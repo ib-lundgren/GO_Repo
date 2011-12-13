@@ -381,10 +381,17 @@
                     "500" : error,
                   }
     
+
+    var env_actions = { "200" : add_interactions,
+                        "201" : add_interactions,
+                        "400" : validation_failed,
+                        "500" : error,
+                      }
+
     var environment_form = {    url : "/api/Environment/",
                                 method : "POST",
                                 dataType : "json",
-                                actions : actions,     
+                                actions : env_actions,     
                                 fields : [  {   id : "title",
                                                 selector : "#environment-form #title",
                                                 validators : [ not_empty, ],
@@ -416,11 +423,6 @@
                                             {   id : "graphic",
                                                 selector : "#environment-form #graphic",
                                                 validators : [ not_empty, ],
-                                            },
-                                            {   
-                                                id : "interactions",
-                                                selector : "#environment-form #interactions",
-                                                validators : [ is_array, ],
                                             },
                                             {   id : "extra",
                                                 selector : "#environment-form #extra",
@@ -484,10 +486,26 @@
     $("#environment-form").submit(function(e) {
         var data = validate_form(environment_form);
         if (data != null) { 
-            send_ajax(environment_form, data);
+            send_ajax(environment_form, data); 
         }
         return false;
     });
+
+    function add_interactions(obj, statusText, xhr) {
+        var interactions = $("#environment-form #interactions").val();
+        var data = {list : "interactions",
+                    cat : "Interaction",
+                    keys : interactions.toString(),
+                   }
+        console.log(data); 
+        $.ajax({type : "POST", 
+                url : "/api/Environment/" + obj.id + "/",
+                data : data,
+                dataType : "json",
+                statusCode : actions,
+        });
+                    
+    }
 
     $("#graphic-form").submit(function(e) {
         var data = validate_form(graphic_form);

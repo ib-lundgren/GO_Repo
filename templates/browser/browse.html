@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="alert-message info">
+    <h2 class="page-title"> Browse {{ category }}s </h2>
+</div>
+
+<table id="objects" class="condensed-table zebra-striped">
+    <thead>
+    </thead>
+    <tbody>
+    </tbody>
+</table>
+
+<hr/>
+
+<a class="btn success" href="/create/{{ category }}/"> Create a new {{ category }} object </a>
+
+{% endblock %}
+{% block footer %}
+<script src="http://autobahn.tablesorter.com/jquery.tablesorter.min.js"></script>
+<script type="text/javascript">
+
+    function capitalise(string)
+    {
+        return string.charAt(0).toUpperCase() + string.slice(1);
+    }
+
+    $.getJSON("/api/{{ category }}/", function(data, textStatus, xhr) {
+        $("#objects tbody tr").remove();
+        for (var i = 0; i < data.length; i++) {
+            var o = data[i];
+            var tr = $("<tr>");
+            
+            delete o.rating;
+            delete o.votes;
+            delete o.extra;
+            delete o.key;
+            delete o.downloads;
+            delete o.created;
+
+            if (i == 0) {
+                var trh = $("<tr>");
+                for (prop in o) { 
+                    if (o[prop]) {        
+                        var th = $("<th>");
+                        th.html(capitalise(prop.replace("_", " ")));
+                        trh.append(th); 
+                    }
+                }
+                $("#objects thead").append(trh);
+            }
+
+            for (var field in o) {
+                if (o[prop]) {
+                    var td = $("<td>");
+                    td.html(o[field].toString());
+                    tr.append(td);
+                }
+            }
+            $("#objects tbody").append(tr);
+        }
+
+        if (data.length == 0) {
+            var info = $("<p>");
+            info.html("It appears that no items have been created yet, so why don't you do it? =)");
+            $("table#objects").after(info);
+        }
+
+        $("table#objects").tablesorter({ sortList: [[1,0]] });
+    });
+
+</script>
+
+{% endblock %}

@@ -14,10 +14,15 @@ class GameObject(db.Model):
             d["id"] = self.key().id()
             d["key"] = str(self.key())
             for p in self.properties():
-              try: 
-                d[p] = unicode(getattr(self, p))
-              except UnicodeDecodeError as e:
-                pass # We add an image url instead
+                try: 
+                    d[p] = unicode(getattr(self, p))
+                except UnicodeDecodeError as e:
+                    pass # We add an image url instead
+
+                # Convert lists of key instances to a list of ids
+                if isinstance(getattr(self, p), list):
+                    d[p] = [int(i.id()) for i in getattr(self,p)]
+                    
             return d
    
     def __str__(self):
@@ -33,11 +38,8 @@ class VisualGameObject(GameObject):
     height = db.FloatProperty()
     graphic = db.ReferenceProperty(Graphic)
 
-class CompositeGameObject(GameObject):
-    objects = db.ListProperty(db.Key)
-
 class Modifier(GameObject):
-    pass
+    action = db.TextProperty()
 
 class Environment(VisualGameObject):
     pstates = set(["solid", "liquid", "gas"])
@@ -53,12 +55,6 @@ class Interaction(GameObject):
 
 class Level(GameObject):
     objects = db.ListProperty(db.Key)
-
-class LocatedObject(GameObject):
-    x = db.IntegerProperty()
-    y = db.IntegerProperty()
-    z = db.IntegerProperty()
-    obj = db.ReferenceProperty(VisualGameObject)
 
 class Equipment(VisualGameObject):
     types = set(["weapon", "armor", "consumable", "other"]) # add more

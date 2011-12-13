@@ -11,9 +11,10 @@
       <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
     <script src="http://code.jquery.com/jquery.min.js" type="text/javascript"></script>
-    <script src="/media/editor.js" type="text/javascript"></script>
-    <link href="/media/bootstrap.css" rel="stylesheet">
+    <script type="text/javascript" src="http://twitter.github.com/bootstrap/1.4.0/bootstrap-dropdown.js"></script>
+    <link href="http://twitter.github.com/bootstrap/1.4.0/bootstrap.css" rel="stylesheet">
     <link href="/media/site.css" rel="stylesheet">
+    <script src="/media/editor.js" type="text/javascript"></script>
     {% block header %}
 
     {% endblock %}    
@@ -25,8 +26,56 @@
       <div class="fill">
         <div class="container">
           <a class="brand" href="/">GO-Repo</a>
-          <ul class="nav">
+          <ul class="nav" data-dropdown="dropdown">
             <li><a href="/">Home</a></li>
+            <li class="dropdown">
+                <a href="#" class="dropdown-toggle"> Create </a>
+                <ul class="dropdown-menu">
+                    <li><a href="/create/GameObject/"> GameObject </a></li>
+                    <li><a href="/create/VisualGameObject/"> VisualGameObject </a></li>
+                    <li><a href="/create/Graphic/"> Graphic </a></li>
+                    <li><a href="/create/Environment/"> Environment </a></li>
+                    <li><a href="/create/Interaction/"> Interaction </a></li>
+                    <li><a href="/create/Level/"> Level </a></li>
+                    <li><a href="/create/Equipment/"> Equipment </a></li>
+                    <li><a href="/create/Modifier/"> Modifier </a></li>
+                    <li><a href="/create/Vehicle/"> Vehicle </a></li>
+                    <li><a href="/create/Objective/"> Objective </a></li>
+                    <li><a href="/create/Mission/"> Mission </a></li>
+                    <li><a href="/create/Team/"> Team </a></li>
+                    <li><a href="/create/Skill/"> Skill </a></li>
+                    <li><a href="/create/Attribute/"> Attribute </a></li>
+                    <li><a href="/create/NPC/"> NPC </a></li>
+                    <li><a href="/create/Character/"> Character </a></li>
+                    <li><a href="/create/Player/"> Player </a></li>
+                    <li><a href="/create/Event/"> Event </a></li>
+                    <li><a href="/create/Game/"> Game </a></li>
+                </ul>
+            </li>
+            <li class="dropdown">
+                <a href="#" class="dropdown-toggle"> Browse </a>
+                <ul class="dropdown-menu">
+                    <li><a href="/browse/GameObject/"> GameObjects </a></li>
+                    <li><a href="/browse/VisualGameObject/"> VisualGameObjects </a></li>
+                    <li><a href="/browse/Graphic/"> Graphics </a></li>
+                    <li><a href="/browse/Environment/"> Environments </a></li>
+                    <li><a href="/browse/Interaction/"> Interactions </a></li>
+                    <li><a href="/browse/Level/"> Levels </a></li>
+                    <li><a href="/browse/Equipment/"> Equipment </a></li>
+                    <li><a href="/browse/Modifier/"> Modifiers </a></li>
+                    <li><a href="/browse/Vehicle/"> Vehicles </a></li>
+                    <li><a href="/browse/Objective/"> Objectives </a></li>
+                    <li><a href="/browse/Mission/"> Missions </a></li>
+                    <li><a href="/browse/Team/"> Teams </a></li>
+                    <li><a href="/browse/Skill/"> Skills </a></li>
+                    <li><a href="/browse/Attribute/"> Attributes </a></li>
+                    <li><a href="/browse/NPC/"> NPCs </a></li>
+                    <li><a href="/browse/Character/"> Characters </a></li>
+                    <li><a href="/browse/Player/"> Players </a></li>
+                    <li><a href="/browse/Event/"> Events </a></li>
+                    <li><a href="/browse/Game/"> Games </a></li>
+                </ul>
+            </li>
             <li><a href="/plan">Plan</a></li>
             <li><a href="/progress">Progress</a></li>
             <li><a href="/repository">Repository</a></li>
@@ -64,9 +113,13 @@
       </footer>
 
     </div> <!-- /container -->
+    <script type="text/javascript">
+        $("#topbar").dropdown();
+    </script>
     {% block footer %}
 
-    {% endblock %} 
+    {% endblock %}
+ 
   </body>
 </html>
 

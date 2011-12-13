@@ -4,11 +4,9 @@ from copy import copy
 
 GameObjectForm = model_form(GameObject)
 VisualGameObjectForm = model_form(VisualGameObject)
-CompositeGameObjectForm = model_form(CompositeGameObject)
 ModifierForm = model_form(Modifier)
 InteractionForm = model_form(Interaction)
 LevelForm = model_form(Level)
-LocatedObjectForm = model_form(LocatedObject)
 EquipmentForm = model_form(Equipment)
 VehicleForm = model_form(Vehicle)
 ObjectiveForm = model_form(Objective)
