@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="alert-message info">
+    <h2 class="page-title"> {{ category }} editor </h2>
+</div>
+
+<div id="{{ category }}">
+</div>
+
+<script src="http://autobahn.tablesorter.com/jquery.tablesorter.min.js"></script>
+<script src="/media/editor.js"></script>
+<script src="/media/forms/{{category}}.js"></script>
+<script type="text/javascript">
+
+    f["api_key"] = {
+        type : "object",
+        id : "api_key",
+        key : "e91e19b9f4da634a15a714db290a381f",
+        validators : [],
+    };
+
+{% if object_id %}
+    f["obj_id"] = {
+        type : "object",
+        id : "obj_id",
+        key : "{{ object_id }}",
+        validators : []
+    };
+    go.create_form(f, "{{ category }}", {{ object_id }});
+{% else %}
+    go.create_form(f, "{{ category }}");
+{% endif %}
+</script>
+
+{% endblock %}

@@ -31,12 +31,20 @@
             var o = data[i];
             var tr = $("<tr>");
             
+            var update = $("<td>");
+            var link = $("<a>");
+            link.attr("href", "/create/" + o.category + "/" + o.id + "/");
+            link.attr("title", "Update this object");
+            link.html("Edit");
+            update.append(link);
+
             delete o.rating;
             delete o.votes;
             delete o.extra;
             delete o.key;
             delete o.downloads;
             delete o.created;
+            delete o.category;
 
             if (i == 0) {
                 var trh = $("<tr>");
@@ -57,6 +65,7 @@
                     tr.append(td);
                 }
             }
+            tr.append(update);
             $("#objects tbody").append(tr);
         }
 

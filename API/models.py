@@ -1,5 +1,21 @@
 from google.appengine.ext import db
 
+# API key management model
+
+class RepoUser(db.Model):
+    # Using StringProperty rather than app engine specific for easier
+    # portability to Django specific models later
+    email = db.StringProperty()
+    api_key = db.StringProperty()
+    domain = db.StringProperty()
+
+
+class Secret(db.Model):
+    user = db.StringProperty()
+    secret = db.StringProperty()
+
+# Game object models
+
 class GameObject(db.Model):
     title = db.StringProperty()
     description = db.TextProperty()
@@ -13,6 +29,7 @@ class GameObject(db.Model):
             d = dict()
             d["id"] = self.key().id()
             d["key"] = str(self.key())
+            d["category"] = str(self.__class__.__name__)
             for p in self.properties():
                 try: 
                     d[p] = unicode(getattr(self, p))
@@ -42,30 +59,23 @@ class Modifier(GameObject):
     action = db.TextProperty()
 
 class Environment(VisualGameObject):
-    pstates = set(["solid", "liquid", "gas"])
-    physical_state = db.StringProperty(choices=pstates)
-    lstates = set(["static", "dynamic"])
-    location_state = db.StringProperty(choices=lstates)
+    physical_state = db.StringProperty()
+    location_state = db.StringProperty()
     interactions = db.ListProperty(db.Key)
 
 class Interaction(GameObject):	
-    triggers = set(["enter", "leave", "activate"])
-    trigger = db.StringProperty(choices=triggers)
+    trigger = db.StringProperty()
     action = db.TextProperty()
 
 class Level(GameObject):
     objects = db.ListProperty(db.Key)
 
 class Equipment(VisualGameObject):
-    types = set(["weapon", "armor", "consumable", "other"]) # add more
-    item_type = db.StringProperty(choices=types)
+    item_type = db.StringProperty()
     item_class = db.StringProperty() # quest, normal, superior etc
-    value = db.FloatProperty()
+    item_value = db.FloatProperty()
     damage = db.FloatProperty()
-    max_damage = db.FloatProperty()
-    min_damage = db.FloatProperty()
     armor = db.FloatProperty()
-    shot_range = db.FloatProperty()
     enhancements = db.ListProperty(db.Key) # modifiers, i.e +hp
         
 class Vehicle(VisualGameObject):
@@ -76,9 +86,9 @@ class Vehicle(VisualGameObject):
     drivers = db.ListProperty(db.Key)
 
 class Objective(GameObject):
-    goals = set(["collect", "kill", "activate", "defend"])
-    goal = db.StringProperty(choices=goals)
+    goal = db.StringProperty()
     targets = db.ListProperty(db.Key) # npcs usually
+    items = db.ListProperty(db.Key) # npcs usually
 
 class Mission(GameObject):
     objectives = db.ListProperty(db.Key)
@@ -94,7 +104,7 @@ class Skill(GameObject):
     rank = db.FloatProperty()
     
 class Attribute(GameObject):
-    value = db.FloatProperty() # health, mana etc.
+    amount = db.StringProperty() # health, mana etc.
 
 class NPC(VisualGameObject):
     skills = db.ListProperty(db.Key) 
@@ -109,10 +119,9 @@ class Character(NPC):
 class Player(GameObject):
     characters = db.ListProperty(db.Key)
     friends = db.ListProperty(db.Key) # other players
-    played = db.FloatProperty() # hours wasted :P
 
 class Event(GameObject):
-    player = db.ReferenceProperty(Player)
+    players = db.ListProperty(db.Key)
 
 class Game(GameObject):
     players = db.ListProperty(db.Key)

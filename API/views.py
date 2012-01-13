@@ -35,6 +35,34 @@ def showForm(request, form, target):
     return direct_to_template(request, 'api/form.html', {"form":form, "target": "/api/" + target + "/"}) 
 # ----------- TMP STOP
 
+# Decorator to check for API keys
+def require_key(target):
+
+    def wrapper(request, *args, **kwargs):
+        key = request.GET.get("api_key")
+        if not key:
+            key = request.POST.get("api_key")
+
+        if not key:
+            info = { "status" : "error", 
+                     "message" : "Not authorized due to missing API key" }
+            return json_response(request, info, 403)
+
+        domain = request.META["REMOTE_ADDR"]
+       
+        user = None
+        for u in RepoUser.all().filter("api_key =", key).filter("domain =", domain):
+            user = u
+
+        if not user:
+            info = { "status" : "error",
+                     "message" : "Not authorized, invalid domain for API key" }
+            return json_response(request, info, 403)
+
+        # Valid user, execute function 
+        return target(request, *args, **kwargs)
+    return wrapper
+
 # Check type of request and delegate
 def handle_objects(request, category=None, **kwargs):
     # Bit of an ugly hack to remove plural (s) to get classname
@@ -86,14 +114,23 @@ def handle_object(request, category=None, objectID=None, **kwargs):
     if not obj:
         return invalid_object(request, category, objectID)
 
-    views = {   "POST" : add_to_list,
+    views = {   "POST" : handle_update,
                 "GET" : get_object,
-                "PUT" : update_object,
+                "PUT" : not_implemented,
                 "DELETE" : delete_object,
                 "HEAD" : not_implemented,
                 "PATCH" : not_implemented,
         }
     return views.get(request.method)(request, objCls, obj, formCls=formCls, **kwargs)
+
+# We use this because django does not accept data sent with
+# a post so any updating of objects has to be awkward :S
+def handle_update(request, objCls, obj, formCls, **kwargs):
+    obj_id = request.POST.get("obj_id")
+    if obj_id:
+        return update_object(request, objCls, obj, formCls, **kwargs)
+    else:
+        return add_to_list(request, objCls, obj, formCls, **kwargs)
 
 def getattr_nocase(module, name):
   varList = __import__(module, globals(), locals(), [], -1)
@@ -117,6 +154,7 @@ def not_implemented(request, objCls, obj=None, formCls=None, **kwargs):
     return json_response(request, info, 404)
 
 # Parse a POST request into an object and save it
+@require_key
 def create_new_object(request, objCls, formCls, **kwargs):
     data = request.POST.copy()
     data.update(request.FILES)
@@ -131,7 +169,6 @@ def create_new_object(request, objCls, formCls, **kwargs):
         else:
             return form_error(request, form, obj) 
     except AttributeError as e:
-        raise
         info = { "status" : "error",
                  "message" : e.args}
         return json_response(request, info, 400)
@@ -139,10 +176,12 @@ def create_new_object(request, objCls, formCls, **kwargs):
 # Create a json error response from a form
 def form_error(request, form, obj):
     info = { "status" : "error",
-             "message" : form.errors }
+             "message" : form.errors,
+             "object" : obj.to_dict() }
     return json_response(request, info, 400)
 
 # Parse a PUT request and update an existing object
+@require_key
 def update_object(request, objCls, obj, formCls, **kwargs):
     data = request.POST.copy()
     data.update(request.FILES)
@@ -152,12 +191,13 @@ def update_object(request, objCls, obj, formCls, **kwargs):
         if form.validate():
             form.populate_obj(obj)
             obj.put()
-            return HttpResponseRedirect("/api/" + objCls.__name__)
+            return json_response(request, obj.to_dict(), 200)
         else:
             return form_error(request, form, obj) 
     except AttributeError as e:
         info = { "status" : "error",
-                 "message" : e.args}
+                 "message" : e.args,
+                 "error" : e }
         return json_response(request, info, 400)
 
 # Get all objects in a category
@@ -168,6 +208,7 @@ def get_objects(request, objCls, formCls, **kwargs):
 
 # Add an object reference to a list of references in this object
 # POST request specific, no forms needed
+@require_key
 def add_to_list(request, objCls, obj, formCls, **kwargs):
     target = request.POST.get("list", None)
     obj_keys = request.POST.get("keys", None)
@@ -221,6 +262,8 @@ def invalid_object(request, category, obj):
     return json_response(request, info), 404
 
 # Delete an object from a category and ID
+# TODO: require_owner
+@require_key
 def delete_object(request, objCls, obj, formCls, **kwargs):
     try:
         obj.delete()
@@ -249,3 +292,38 @@ def json_response(request, info, status=200, **kwargs):
     if callback:
         json = callback + "(" + json + ")"
     return HttpResponse(json, mimetype="application/json", status=status)    
+
+###### Create new api_key section ######
+
+# Create new api_key
+def create_api_key(request):
+    domain = request.META["REMOTE_ADDR"]
+    if not domain in ["127.0.0.1", "go-repo.appspot.com"]:
+        info = { "status" : "error",
+                 "message" : "Not authorized" }
+        return json_response(request, info, 403)
+
+    # note that we do not validate these! (future work: validate)
+    email = request.POST.get("email")
+    domain = request.POST.get("domain")
+  
+    if not email or not domain:
+        info = { "status" : "error",
+                 "message" : "missing parameter email or domain" }
+        return json_response(request, info, 400)
+
+    # the api_key is simple a 20 char long encrypted mix of 
+    # user info + secret
+    import md5
+    api_key = md5.new(email + domain + secret).hexdigest()
+
+    # create and store the new user
+    usr = RepoUser(email=email, api_key=api_key, domain=domain)
+    usr.put()
+
+    info = { "status" : "ok",
+             "message" : "API key successfully created",
+             "api_key" : api_key }
+    return json_response(request, info, 201)
+
+
