@@ -4,37 +4,6 @@ from forms import *
 from django.utils import simplejson
 from django.http import HttpResponse, HttpResponseRedirect, QueryDict
 
-# ----------- TMP START?
-def showGraphics(request, id=None):
-  response = HttpResponse()
-  if (id):
-    response['Content-Type'] = 'image/png'
-    response['Cache-Control'] = 'max-age=7200'
-    img = Graphic.get_by_id(int(id))
-    if img and img.picture:
-      response.content = img.picture
-  else:
-    for img in Graphic.all():
-      response.content += '<a href="/' + img.path + '"><img src="/' + img.path + '"/></a><br/>'  
-  return response
-
-def addEnvironment(request):
-    return showForm(request, EnvironmentForm(), "Environment")
-    
-def addVisualGameObject(request):
-    return showForm(request, VisualGameObjectForm(), "VisualGameObject")
-
-def addGraphicsObject(request):
-    return showForm(request, GraphicForm(), "Graphic")
-    
-def addGameObject(request):
-    form = GameObjectForm()
-    return showForm(request, GameObjectForm(), "GameObject")
-
-def showForm(request, form, target):
-    return direct_to_template(request, 'api/form.html', {"form":form, "target": "/api/" + target + "/"}) 
-# ----------- TMP STOP
-
 # Decorator to check for API keys
 def require_key(target):
 
@@ -43,20 +12,23 @@ def require_key(target):
         if not key:
             key = request.POST.get("api_key")
 
-        if not key:
+        from google.appengine.api import users
+        user = users.get_current_user()
+
+        if not key and not user:
             info = { "status" : "error", 
                      "message" : "Not authorized due to missing API key" }
             return json_response(request, info, 403)
 
         domain = request.META["REMOTE_ADDR"]
        
-        user = None
+        usr = None
         for u in RepoUser.all().filter("api_key =", key).filter("domain =", domain):
-            user = u
+            usr = u
 
-        if not user:
+        if not usr and not user:
             info = { "status" : "error",
-                     "message" : "Not authorized, invalid domain for API key" }
+                     "message" : "Not authorized, invalid domain %s for API key" % domain}
             return json_response(request, info, 403)
 
         # Valid user, execute function 
@@ -298,7 +270,7 @@ def json_response(request, info, status=200, **kwargs):
 # Create new api_key
 def create_api_key(request):
     domain = request.META["REMOTE_ADDR"]
-    if not domain in ["127.0.0.1", "go-repo.appspot.com"]:
+    if not domain in ["127.0.0.1", "go-repo.appspot.com", "46.162.94.89"]:
         info = { "status" : "error",
                  "message" : "Not authorized" }
         return json_response(request, info, 403)
@@ -315,7 +287,7 @@ def create_api_key(request):
     # the api_key is simple a 20 char long encrypted mix of 
     # user info + secret
     import md5
-    api_key = md5.new(email + domain + secret).hexdigest()
+    api_key = md5.new(email + domain).hexdigest()
 
     # create and store the new user
     usr = RepoUser(email=email, api_key=api_key, domain=domain)
@@ -327,3 +299,17 @@ def create_api_key(request):
     return json_response(request, info, 201)
 
 
+# ----------- TMP START?
+def showGraphics(request, id=None):
+  response = HttpResponse()
+  if (id):
+    response['Content-Type'] = 'image/png'
+    response['Cache-Control'] = 'max-age=7200'
+    img = Graphic.get_by_id(int(id))
+    if img and img.picture:
+      response.content = img.picture
+  else:
+    for img in Graphic.all():
+      response.content += '<a href="/' + img.path + '"><img src="/' + img.path + '"/></a><br/>'  
+  return response
+# ----------- TMP STOP

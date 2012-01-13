@@ -7,10 +7,6 @@ from browser.views import *
 
 urlpatterns = patterns('',
     (r'^$', index),
-    (r'api/add/Graphics', addGraphicsObject),
-    (r'api/add/Environment', addEnvironment),
-    (r'api/add/GameObject', addGameObject),
-    (r'api/add/VisualGameObject', addVisualGameObject),
     (r'api/image[s]*/(\d+)?', showGraphics),
     (r'^create/(?P<category>\w+)/(?P<objectID>\d+)/$', update),
     (r'^create/(?P<category>\w+)/$', create),
