@@ -112,18 +112,18 @@ go.validate_form = function(target) {
 
 go.submit_form = function(target) {
     if (!go.validate_form(target)) {
-        // TODO: Display error message
+        $("#error").html("<strong>Please fix the errors in form!</strong>");
+        $("#error").show();
     }
     else if (go.has_files(target)) {
-        console.log("got ya");
         var iframe = $("<iframe>");
         iframe.attr("id", "our_secret_iframe");
         iframe.attr("name", "our_secret_iframe");
         iframe.attr("src", "#");
         iframe.attr("width", "0");
         iframe.attr("height", "0");
-        iframe.css("display: none; visibility:hidden;");
-
+        iframe.css("display: none; visibility:hidden; position:absolute; top: -999px; left: -999px;");
+        
         var data = {}
         for (var key in go.forms[target]) {
             var field = go.forms[target][key];
@@ -137,14 +137,13 @@ go.submit_form = function(target) {
         if (data.obj_id) 
             url += data.obj_id + "/";
 
+        console.log("Submitting iframe form data");
         console.log(data);
-        console.log(url);
         var form = $("#" + target + " form");
         form.attr("method", "POST");
         form.attr("action", url);
         form.attr("target", "our_secret_iframe");
         form.after(iframe);
-        console.log(form);
         form.submit();
         return true;
     }
@@ -161,6 +160,8 @@ go.submit_form = function(target) {
         // Check if we are updating an object
         if (data.obj_id) 
             url += data.obj_id + "/";
+
+        console.log("Submitting ajax form data");
         console.log(data);
         $.ajax({
             type : "POST",
@@ -177,6 +178,39 @@ go.submit_form = function(target) {
             }
         });
         return false;
+    }
+}
+
+go.submit_list = function(target, object) {
+    var actions = {
+        201 : go.list_updated,
+        200 : go.list_updated,
+        400 : go.invalid_form,
+        403 : go.unauthorized,
+        404 : go.object_not_found,
+        500 : go.internal_error
+    };
+
+    for (var key in go.forms[target]) {
+        var field = go.forms[target][key];
+        if (field.type == "list") {
+            var data = {
+                list : field.id,
+                cat : field.category,
+                keys : field.value.toString()                
+            };
+            console.log(go.forms[target]);
+            console.log(field);
+            console.log("Submitting ajax list data");
+            console.log(data);
+            $.ajax({
+                url : "/api/" + target + "/" + object.id + "/",
+                type : "POST",
+                dataType : "json",
+                data : data,
+                statusCode : actions
+           });
+        }
     }
 }
 
@@ -253,6 +287,10 @@ go.object_created = function(data, textStatus, xhr) {
     var info = $("<pre>");
     info.html(JSON.stringify(data, null, '\t'));
     $("#"+data.category).html(info);
+    setTimeout(function() {
+        info.load("/api/" + data.category + "/" + data.id + "/")
+    }, 50);
+    go.submit_list(data.category, data);
 }
 
 go.object_updated = function(data, textStatus, xhr) {
@@ -260,6 +298,15 @@ go.object_updated = function(data, textStatus, xhr) {
     var info = $("<pre>");
     info.html(JSON.stringify(data, null, '\t'));
     $("#"+data.category).html(info);
+    setTimeout(function() {
+        info.load("/api/" + data.category + "/" + data.id + "/")
+    }, 50);
+    go.submit_list(data.category, data);
+}
+
+go.list_updated = function(data, textStatus, xhr) {
+    console.log("Added object to list");
+    console.log(data);
 }
 
 go.invalid_form = function(xhr) {

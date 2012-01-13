@@ -53,7 +53,7 @@ class VisualGameObject(GameObject):
     weight = db.FloatProperty()
     width = db.FloatProperty()
     height = db.FloatProperty()
-    graphic = db.ReferenceProperty(Graphic)
+    graphic = db.ListProperty(db.Key)
 
 class Modifier(GameObject):
     action = db.TextProperty()

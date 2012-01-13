@@ -17,6 +17,14 @@ f = {
         rows : 3,
         validators : [go.not_empty]
     },
+    graphic : {
+        type : "list",
+        id : "graphic",
+        label : "Graphic",
+        help : "What this object looks like.",
+        category : "Graphic",
+        validators : []
+    },
     skills : {
         type : "list",
         id : "skills",
