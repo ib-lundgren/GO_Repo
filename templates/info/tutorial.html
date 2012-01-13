@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="alert-message info">   
+<h2 class="page-title">GO-Repo API Usage Tutorial: Javascript version</h2>
+</div>
+<div>
+<p>
+The Game Object Repository (GO-Repo) intends to simplify game development. In this tutorial, we will show you how easy it is to get started, by constructing a javascript application that fetches objects from the repository and makes use of them using the CraftyJS game engine.
+</p>
+<p>
+Step one of course is to determine what we want to create. The game we are to make now is to consist of a skeleton character (that we shall call "Thinman") that can move about in a 2D environment and shoot fire from a flamethrower. For this we need objects for the character himself, the flames of the fire and a ground for him to stand on.
+</p>
+<p>
+Once we know what we are looking for, we can browse the repository  http://go-repo.appspot.com/browse/Graphic/ (http://go-repo.appspot.com/api/images) for graphics that seem appropriate and make note of their names. If we do not find what we are looking for we can of course add it. Now, the game could use the graphics objects directly but, as we might later want to extend our game with a physics engine, we encapsulate each of the three Graphic objects in its own VisualGameObject.
+</p>
+<p>
+Objects in the repository all have their own ID number; using this ID we can fetch objects by sending a http GET request to the backend (http://go-repo.appspot.com). The backend will respond with data of the object in question, in the JSON format.
+</p>
+<p>
+The following code shows an example of how to load a VisualGameObject into 
+</p>
+<pre>
+function loadVisualGameObject(vid, componentCallback) {
+    $.getJSON(serverURL + "/api/VisualGameObject/" + vid + "?callback=?", function(data) {
+        componentCallback(data);
+    });
+}
+</pre>
+<p>
+<i>data</i> in this case will be a reference to a javascript object containing all of the JSON data. In the case of a VisualGameObject, the object will contain the following variables: data.title, data.description, data.graphic, data.width, data.height, data.weight and data.info. These can now be used just like any other javascript variable, after all - that is what they are! We know what you're thinking but yes, using the GO-repo API really is this simple!
+</p>
+<p>
+[As you may have noticed we are utilizing a callback in the code above (componentCallback). This is needed to ensure the game will not start before all objects have been loaded, as the AJAX call is asynchronous. Important to note that we assume our Javascript game to have a single threaded execution, which is not that difficult to ensure as it mostly is, but it is important to know that there are exceptions: e.g. when dealing with immediate events ("onblur", etc.). ]
+</p>
+{% endblock %}
+
+
+
+
+

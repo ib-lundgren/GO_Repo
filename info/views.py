@@ -11,6 +11,9 @@ def contact(request):
 
 def doc(request):
    return direct_to_template(request, 'info/doc.html', {})
-
+   
+def tutorial(request):
+   return direct_to_template(request, 'info/tutorial.html', {})
+   
 def index(request):
    return direct_to_template(request, 'info/index.html', {})
