@@ -1,0 +1,146 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="alert-message info">  
+<h2 class="page-title"> GO.js - Javascript library for interacting with GO-Repo </h2> 
+</div>    
+<h3> Introduction </h3>
+<p>GO.js is a library that creates, validates and submits Game Object forms. It is built to allow for easily adding new objects, validation requirements and enhancements. Whether you are building your own editor or extending our you can benefit from using GO.js.
+</p>
+
+<p> Download the one we currently use from <a href="/media/go.js">/media/go.js</a> or from <a href="https://github.com/ib-lundgren/GO_Repo/blob/master/media/go.js"> Github /media/go.js</a>.</p> 
+
+<p> On GO-Repo we use a collection of form structures under <a href="https://github.com/ib-lundgren/GO_Repo/tree/master/media/forms">/media/forms</a>, one for each category of game object, and from those we generate forms. Thus all we need to do is to provide the form, the category and optionally and object id. </p>
+
+<pre>
+    &lt;script type="text/javascript" src="/media/jquery.js">&lt;/script&gt;
+    &lt;script type="text/javascript" src="/media/go.js">&lt;/script&gt;
+    &lt;script type="text/javascript" src="/media/forms/Environment.js"&gt;&lt;/script&gt;
+    &lt;script type="text/javascript"&gt;
+        // go is imported from go.js
+        // f is imported from Environment.js
+
+        // For creating new Environment objects
+        go.create_form(f, "Environment");
+
+        // For updating an existing Environment object with id 60
+        go.create_form(f, "Environment", 60);
+    &lt;/script&gt;
+    &lt;div id="Environment"&gt; Form will be inserted here &lt;/div&gt;
+</pre>
+
+Naturally we fetch the category and object ID from the URL as its routed through Django and automatically insert them in a template.
+
+<h3> Library overview </h3>
+
+<p>For an example of a form please see <a href="/media/forms/Environment.js"> Environment.js </a>. We will refer to the category we are working with as "target". </p>
+
+<dl>
+        <dt> go.create_form(form, target, object_id, updated): </dt>
+        <dd> 
+            Creates an entire form with method handlers for validation and submission. To create an 
+            an update form include the object id as the third parameter. The updated parameter is 
+            only used to handle the asynchronous nature of getting the object to be updated from
+            the repository and filling the form with its data. Only use 2 or 3 parameters unless you
+            the internals of create_form.
+            It uses a set of helper functions named go.create_X where X is one of "object", "file",
+            "textfield", "textarea", "choice" or "list".
+        </dd>
+        <br/>
+        <dt> go.update_form(target, key, field, value)</dt>
+        <dd>
+            Will set the element value of the field in the form to the newly created form element.
+            This method also calls check and append.
+        </dd>
+        <br/>
+        <dt> go.check_and_append(target): </dt>
+        <dd> 
+            Utility function called by update_form, indirectly by all field creators. When all 
+            fields have been created this function will build the form and add it to a div on 
+            the website with id = target.
+        </dd>
+        <br/>
+        <dt> go.validate_form(target)</dt>
+        <dd>
+            Validates the form specified by target. Uses the field specific validators to do so. 
+            Returns true if all checks pass, false otherwise.
+        </dd>
+        <br/>
+        <dt> go.submit_form(target)</dt>
+        <dd>
+            Submits the form using an ajax POST request. In the form includes field of type
+            "file" then the form will be submitted using an invisible iframe instead. All
+            lists will be submitted after the object is created. Note that currently forms 
+            with both files and lists will not have the objects in the list added due to
+            there being no registered callback on iframe submit completion. 
+        </dd>
+        <br/>
+        <dt> go.submit_list(target, object)</dt>
+        <dd>
+            Adds the items in lists from the target form to the specified object. Normally called 
+            upon successfull object update or creation.
+        </dd>
+        <br/>
+        <dt> go.has_files(target)</dt>
+        <dd>
+            Checks if the form contains "file" fields.
+        </dd>
+        <br/>
+        <dt> go.validate_field(field)</dt>
+        <dd>
+            Iterates over the set of validators for the field and check if they all pass. 
+            It uses a set of helper functions named go.val_X where X is one of "object", "file",
+            "textfield", "textarea", "choice" or "list" in order to get the values from the form.
+        </dd>
+        <br/>
+        <dt> go.not_empty(val)</dt>
+        <dd>
+            Checks if val contains any information.
+        </dd>
+        <br/>
+        <dt> go.is_float(val)</dt>
+        <dd>
+            Checks if val is of type float.
+        </dd>
+        <br/>
+        <dt> go.object_created(data, textStatus, xhr)</dt>
+        <dd>
+            Callback for successfull object creation.
+        </dd>
+        <br/>
+        <dt> go.object_updated(data, textStatus, xhr)</dt>
+        <dd>
+            Callback for successfull update of an object.
+        </dd>
+
+        <br/>
+        <dt> go.list_updated(data, textStatus, xhr)</dt>
+        <dd>
+            Callback for successfull addition of items to an object.
+        </dd>
+        <br/>
+
+        <dt> go.invalid_form(xhr)</dt>
+        <dd>
+            Callback for when a form contains invalid field or data.
+        </dd>
+        <br/>
+
+        <dt> go.unauthorized(xhr)</dt>
+        <dd>
+            Callback for unauthorized users, usually invalid API keys.
+        </dd>
+        <br/>
+
+
+        <dt> go.object_not_found(xhr)</dt>
+        <dd>
+            Callback for requests to an invalid object ID.
+        </dd>
+        <br/>
+
+        <dt> go.internal_error(xhr)</dt>
+        <dd>
+            Callback for when the server had an internal error.
+        </dd>
+</dl>
+{% endblock %}

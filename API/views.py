@@ -270,7 +270,8 @@ def json_response(request, info, status=200, **kwargs):
 # Create new api_key
 def create_api_key(request):
     domain = request.META["REMOTE_ADDR"]
-    if not domain in ["127.0.0.1", "go-repo.appspot.com", "46.162.94.89"]:
+    from setup import allowed_api_key_creators as allowed
+    if not domain in allowed:
         info = { "status" : "error",
                  "message" : "Not authorized" }
         return json_response(request, info, 403)

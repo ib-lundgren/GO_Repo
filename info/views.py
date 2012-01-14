@@ -15,5 +15,8 @@ def doc(request):
 def tutorial(request):
    return direct_to_template(request, 'info/tutorial.html', {})
    
+def gojs(request):
+   return direct_to_template(request, 'info/gojs.html', {})
+   
 def index(request):
    return direct_to_template(request, 'info/index.html', {})

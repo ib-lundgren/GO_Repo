@@ -1,5 +1,5 @@
 from django.conf.urls.defaults import patterns, include, url
-from info.views import index, plan, repo, doc, contact, tutorial
+from info.views import * 
 from progress.views import progress
 from API.views import *
 from editor.views import *
@@ -19,6 +19,7 @@ urlpatterns = patterns('',
     (r'progress', progress), 
     (r'doc', doc), 
     (r'tutorial', tutorial), 
+    (r'go.js', gojs),
     (r'contact', contact),      
     (r'repository', repo),
 )
